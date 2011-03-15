@@ -1,0 +1,7 @@
+
+-Changed table 'user' to 'users' because "user" is a SQL-99 keyword.
+-Removed 'UserID' from people table.
+-Added 'EntityID' to Users table.
+-Changed 'Entity' table to 'EntityBase' due to java persistence class name conflict.
+-Changed 'Events' data type to DateTime from Date.
+-Added field OwnerID to EntityBase to signify ownership of entites by a User.  I did this because Hibernate makes it difficult to use an external table for Many-to-One relationships.  Also, this actually supports that Users are the only entities that own other entities.  I did not create a fk for this relationship.
