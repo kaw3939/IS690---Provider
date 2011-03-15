@@ -117,7 +117,6 @@ public class NewEmptyJUnitTest {
         //Test ownership property
         u.setOwner(u1);
         u.save();
-
         u0.setOwner(u1);
         u0.save();
         
