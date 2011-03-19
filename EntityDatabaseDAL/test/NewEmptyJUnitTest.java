@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 /**
  *
  * @author Rick Shaub
+ * 
  */
 public class NewEmptyJUnitTest {
 
@@ -56,8 +57,7 @@ public class NewEmptyJUnitTest {
         p.setLastName("Sprungfield");
         p.setPhone("800-587-6309");
         p.save();
-
-        
+       
     }
 
     @Test
@@ -107,7 +107,7 @@ public class NewEmptyJUnitTest {
         u1.setTypeId(0);
         u1.setEmail(email2);
         u1.setFirstName("Johnny");
-        u1.setLastName("knoxville");
+        u1.setLastName("Knoxville");
         u1.setPhone("800-251-1112");
         u1.setPassword(pwd2);
         u1.setOwner(u1);
