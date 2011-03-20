@@ -31,6 +31,15 @@ public class AeSimpleMD5
         return buf.toString();
     }
 
+    /**
+     * Takes a string and returns its MD5 hash.
+     * @param text
+     * String to get the hash of.
+     * @return
+     * Hash of text.
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
     public static String MD5(String text)
     throws NoSuchAlgorithmException, UnsupportedEncodingException  {
         MessageDigest md;

@@ -11,7 +11,7 @@ import java.io.Serializable;
 import org.hibernate.*;
 import org.hibernate.cfg.*;
 /**
- *
+ * The base class for all entities.
  * @author Rick Shaub
  */
 @Entity
@@ -19,14 +19,7 @@ import org.hibernate.cfg.*;
     ,catalog="entitydb")
 public class EntityBase extends PersistableObject implements Serializable
 {
-    //    protected PersistanceObject UniqueSelectQuery(String Query)
-    //    {
-    //
-    //
-    //
-    //
-    //    }
-
+    
     @Id
     @Column(name="EntityID", unique=true, nullable=false, length=40)
      private String entityId;
@@ -40,26 +33,37 @@ public class EntityBase extends PersistableObject implements Serializable
     @Column(name = "EntityParentEdit", length = 20)
      private String entityParentEdit;
 
-//     @Column(name="OwnerID", length=40)
-//     private String ownerID;
 
 
-
-
-
-    
-
-    @ManyToOne//(fetch=FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="OwnerID", referencedColumnName="EntityID")//, insertable=false, updatable=false)
      private User owner;
 
 
-      
+     /**
+      * Default constructor for the EntityBase class
+      */
      public EntityBase(){}
+     /**
+      *
+      * @param entityId
+      * Unique ID for this instance of EntityBase
+      */
      public EntityBase(String entityId)
      {
         this.entityId = entityId;
      }
+
+     /**
+      *
+      * @param entityId
+      * Unique ID for this instance of EntityBase
+      * @param entityTypeId
+      * EntityType ID
+      * @param entityAccessStatus
+      *
+      * @param entityParentEdit
+      */
     public EntityBase(String entityId, Integer entityTypeId,
             String entityAccessStatus, String entityParentEdit)
     {
@@ -70,26 +74,45 @@ public class EntityBase extends PersistableObject implements Serializable
     }
 
     
-
+    /**
+     * Convenience method that generates a unique ID from a random UUID.
+     * @return
+     * A UUID to be used as an Entity ID.
+     */
     public static String generateNewID()
     {
         return UUID.randomUUID().toString();
     }
 
-    
+    /**
+     *Gets the Entity's ID
+     * @return
+     * The Entity's ID
+     */
     public String getEntityId()
     {
         return this.entityId;
     }
 
+    /**
+     * Sets the entity's ID.
+     * @param entityId
+     */
     public void setEntityId(String entityId) {
         this.entityId = entityId;
     }
-
+    /**
+     * Gets the entity type ID.
+     * @return
+     * The entity type ID.
+     */
     public Integer getTypeId() {
         return this.entityTypeId;
     }
-
+    /**
+     * Sets the entity type ID.
+     * @param entityTypeId
+     */
     public void setTypeId(Integer entityTypeId) {
         this.entityTypeId = entityTypeId;
     }
@@ -114,6 +137,7 @@ public class EntityBase extends PersistableObject implements Serializable
     }
 
     /**
+     * Gets the User who created and/or manages this entity.
      * @return the owner
      */
     public User getOwner() {
@@ -121,13 +145,19 @@ public class EntityBase extends PersistableObject implements Serializable
     }
 
     /**
+     * Sets the User who created and/or manages this entity.
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
         this.owner = owner;
-        //ownerID = owner.getEntityId();
+        
     }
-
+    /**
+     * Runs a select query on the ID given and returns the entity with that ID.
+     * @param id
+     * @return
+     * The entity with the given ID or null if none exists.
+     */
     protected static EntityBase selectByID(String id)
     {
         SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
@@ -154,6 +184,16 @@ public class EntityBase extends PersistableObject implements Serializable
 
 
     }
+
+    /*
+     * Creates a new ID for the entity. this should be called on a new entity
+     * before saving it to the database.
+     */
+    public void createNewID()
+    {
+        this.setEntityId(generateNewID());
+    }
+
 
     @Override
     protected Serializable getID()

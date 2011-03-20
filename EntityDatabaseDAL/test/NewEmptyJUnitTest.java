@@ -80,7 +80,7 @@ public class NewEmptyJUnitTest {
         //Create the first User
         User u = new User();
         u.setEntityAccessStatus("1");
-        u.setEntityId(EntityBase.generateNewID());
+        u.createNewID();
         u.setTypeId(0);        
         u.setEmail(email1);
         u.setFirstName("Ricky");
