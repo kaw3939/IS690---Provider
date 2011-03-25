@@ -51,8 +51,7 @@ public class UserResource {
            json.put("FirstName", u.getFirstName());
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
-           json.put("Phone", u.getEmail());
-           json.put("EntityId", u.getEntityId());
+           json.put("Phone", u.getEmail());           
         } catch (Exception ex){
             return ex.toString();
         }
@@ -69,12 +68,9 @@ public class UserResource {
     public String  deleteUser(@QueryParam("email") String astrEmail) {
         String strEntityId=null;
       try {
-      
-      //    User u = User.selectByUsername(content.getString("Email")) ;
-       //    User u = User.getUserByPassword(content.getString("Email"),content.getString("Password"));
            JSONObject content = new JSONObject(astrEmail);
-           User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
-           strEntityId= u.getEntityId();
+           User u = User.selectByUsername(content.getString("Email")) ;
+      //   User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
            u.delete(true);
         } catch (Exception ex){
            return ex.toString();
@@ -123,17 +119,14 @@ public class UserResource {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
-         // User u = User.selectByUsername(content.getString("Email")) ;
-          User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
-
+          User u = User.selectByUsername(content.getString("Email")) ;
+         // User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
           u.setFirstName((String) content.get("FirstName"));
           u.setLastName((String) content.get("LastName"));
           u.setPhone((String) content.get("Phone"));
           u.setPassword((String) content.get("Password"));
           u.save();
-       //   User uUpdated = User.selectByUsername(content.getString("Email")) ;
-          User uUpdated = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
-
+          User uUpdated = User.selectByUsername(content.getString("Email")) ;
           strName= uUpdated.getFirstName();
        } catch (Exception ex){
              return ex.toString();

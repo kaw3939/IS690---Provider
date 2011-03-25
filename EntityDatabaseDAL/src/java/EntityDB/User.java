@@ -130,7 +130,7 @@ public class User extends Person
      * @param name User's email address
      * @return The user with the matching username or null if no user exists.
      */
-    protected static User selectByUsername(String name)
+    public static User selectByUsername(String name)
     {
         SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
         // new AnnotationConfiguration().configure().buildSessionFactory();
