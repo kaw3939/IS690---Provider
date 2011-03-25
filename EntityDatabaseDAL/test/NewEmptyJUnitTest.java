@@ -117,6 +117,9 @@ public class NewEmptyJUnitTest {
         
         User u2 = User.getUserByPassword(email1,pwd1);
 
+        u2.setFirstName("testupdate123");
+        u2.save();
+
         //Assert we can lookup first user
         assert(u2 != null);
         User u3 = u2.getOwner();
@@ -136,7 +139,21 @@ public class NewEmptyJUnitTest {
         //Verify deletion of the owner cascades
         User u5 = User.getUserByPassword(email1,pwd1);
         assert(u5==null);
-        
+        String pwd4 = EntityBase.generateNewID();
+        User u6 = new User();
+        u6.createNewID();
+        u6.setEmail("abc1@somewhere.ru");
+        u6.setFirstName("funnybone");
+        u6.setLastName("funnybone");
+        u6.setPhone("800-251-1112");
+        u6.setPassword(pwd4);
+        u6.save();
+
+       User u7 = User.getUserByPassword("abc1@somewhere.ru",pwd4);
+       System.out.println(u7.getFirstName());
+       u7.setFirstName("testupdate456");
+       u7.save();
+       u7.delete(true);
 
 
     }

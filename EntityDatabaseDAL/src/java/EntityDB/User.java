@@ -34,8 +34,9 @@ public class User extends Person
     private int saltMin = 3;
     private int saltMax = 15;
 
-    @OneToMany(mappedBy="owner")
-    private Set<EntityBase> children;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="owner")
+    private Set<EntityBase> children =  new HashSet<EntityBase>();
+;
 
 
     @SuppressWarnings("LeakingThisInConstructor")

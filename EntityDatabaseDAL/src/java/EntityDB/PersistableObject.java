@@ -74,7 +74,9 @@ public abstract class PersistableObject implements Serializable
         if (load) {
             saved = session.get(this.getClass(), getID(), LockMode.UPGRADE);
         }
-        session.saveOrUpdate(saved);
+       // session.saveOrUpdate(saved);
+       // using saveOrUpdate was causing errors on update, so using merge instead.
+        session.merge(saved);
         session.flush();
         tx.commit();        
     }
