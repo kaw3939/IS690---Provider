@@ -7,6 +7,7 @@ package EntityManager;
 
 import EntityDB.EntityBase;
 import EntityDB.User;
+import java.util.List;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -18,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -47,16 +49,48 @@ public class UserResource {
           JSONObject json = new JSONObject();
       try {
            JSONObject content = new JSONObject(astrEmail);
-           User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
+           User u = User.selectByUsername((String) content.getString("Email"));
            json.put("FirstName", u.getFirstName());
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
-           json.put("Phone", u.getEmail());           
+           json.put("Phone", u.getPhone());
         } catch (Exception ex){
             return ex.toString();
         }
         return json.toString();
     }
+
+    /**
+     * Retrieves representation of an instance of EntityDB.UserResource
+     * @return an instance of EntityDB.User
+     */
+    @Path("/list/all")
+    @GET
+    @Produces("application/json")
+    public String retrieveAllUsers() {
+        //TODO return proper representation object
+    
+      JSONArray jsonArray =new JSONArray();
+      try {
+        User[] user =EntityBase.getAllUsers();
+         for(int i = 0;i<user.length;i++)
+        {
+           User u = user[i] ;
+           JSONObject json = new JSONObject();
+           json.put("FirstName", u.getFirstName());
+           json.put("LastName", u.getLastName());
+           json.put("Email", u.getEmail());
+           json.put("Phone", u.getPhone());
+           jsonArray.put(json);
+        }
+
+     //   json.put("Users:", user);
+        } catch (Exception ex){
+            return ex.toString();
+        }
+        return jsonArray.toString();
+    }
+
 
     /**
      * Delete method for deleting  an instance of User
@@ -66,16 +100,18 @@ public class UserResource {
     @Path("/delete")
     @DELETE
     public String  deleteUser(@QueryParam("email") String astrEmail) {
-        String strEntityId=null;
+        String strName = null;
       try {
            JSONObject content = new JSONObject(astrEmail);
            User u = User.selectByUsername(content.getString("Email")) ;
       //   User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
+           strName = u.getFirstName();
+           u.save();
            u.delete(true);
         } catch (Exception ex){
            return ex.toString();
         }
-      return strEntityId;
+      return "deleted:"+ strName;
     }
 
     /**

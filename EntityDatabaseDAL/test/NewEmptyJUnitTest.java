@@ -149,13 +149,19 @@ public class NewEmptyJUnitTest {
         u6.setPassword(pwd4);
         u6.save();
 
-       User u7 = User.getUserByPassword("abc1@somewhere.ru",pwd4);
+       User u7 = User.selectByUsername("abc1@somewhere.ru");
        System.out.println(u7.getFirstName());
        u7.setFirstName("testupdate456");
        u7.save();
        u7.delete(true);
 
 
+    }
+
+    @Test
+    public void TestGetAllUsers(){
+        User[] user = EntityBase.getAllUsers();
+        assert(user !=null);
     }
 
     @Test
