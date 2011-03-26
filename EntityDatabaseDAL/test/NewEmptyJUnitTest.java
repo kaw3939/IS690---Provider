@@ -1,3 +1,8 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 import java.util.*;
 
 import org.junit.After;
@@ -40,19 +45,57 @@ public class NewEmptyJUnitTest {
     // @Test
     // public void hello() {}
 
-    //@Test
-    public void testPerson()
+    @Test
+    public void testPerson() throws java.security.NoSuchAlgorithmException, java.io.UnsupportedEncodingException
     {
         Person p = new Person();
         p.setEntityAccessStatus("1");
         p.setEntityId(EntityBase.generateNewID());
         p.setTypeId(0);
-        p.setEmail("someone@somewhere.wut");
-        p.setFirstName("Ricky");
-        p.setLastName("Sprungfield");
+        p.setEmail("person@testing.com");
+        p.setFirstName("Mark");
+        p.setLastName("HopeWorks");
         p.setPhone("800-587-6309");
         p.save();
-       
+
+        //Test User Person ownership
+        User personOwner=new User();
+        personOwner.setFirstName("Charlie");
+        personOwner.setLastName("THeBoss@company.com");
+        personOwner.setPhone("908-0090-1234");
+        personOwner.setEntityId(EntityBase.generateNewID());
+        personOwner.setPassword(EntityBase.generateNewID());
+        personOwner.save();
+        
+        Person person=(Person) Person.selectByPersonEmail("Test2@test.com");
+        Person p1=new Person();
+        p1.setEntityAccessStatus("1");
+        p1.setEntityId(EntityBase.generateNewID());
+        p1.setTypeId(0);
+        p1.setPhone("800-587-6309");
+        p1.setFirstName("Tommy");
+        assert(person!=null);
+        String lname=person.getLastName();
+        p1.setLastName(lname);
+        p1.setEmail("employee@company.com");
+        p1.setOwner(personOwner);
+        p1.save();
+
+
+        //Do delettions
+        p.delete(true);
+        p1.delete(true);
+
+        Person p6=Person.selectByPersonEmail("person@testing.com");
+        //Ensure that p6 has been deleted
+        assert(p6==null);
+        Person p7=Person.selectByPersonEmail("employee@company.com");
+        assert(p7!=null);
+
+
+       // Person person2=Person.selectByPersonEmail("Test4@Test.com");
+       // person2.delete(true);
+
     }
 
     @Test
@@ -117,9 +160,6 @@ public class NewEmptyJUnitTest {
         
         User u2 = User.getUserByPassword(email1,pwd1);
 
-        u2.setFirstName("testupdate123");
-        u2.save();
-
         //Assert we can lookup first user
         assert(u2 != null);
         User u3 = u2.getOwner();
@@ -139,6 +179,7 @@ public class NewEmptyJUnitTest {
         //Verify deletion of the owner cascades
         User u5 = User.getUserByPassword(email1,pwd1);
         assert(u5==null);
+<<<<<<< HEAD
         String pwd4 = EntityBase.generateNewID();
         User u6 = new User();
         u6.createNewID();
@@ -163,6 +204,10 @@ public class NewEmptyJUnitTest {
     public void TestGetAllUsers(){
         User[] user = EntityBase.getAllUsers();
         assert(user !=null);
+=======
+        
+       
+>>>>>>> contributor/master
     }
 
     @Test
@@ -184,5 +229,4 @@ public class NewEmptyJUnitTest {
         e.setEndDate(date2);
         e.save();
     }
-
 }
