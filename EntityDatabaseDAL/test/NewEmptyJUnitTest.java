@@ -179,7 +179,7 @@ public class NewEmptyJUnitTest {
         //Verify deletion of the owner cascades
         User u5 = User.getUserByPassword(email1,pwd1);
         assert(u5==null);
-<<<<<<< HEAD
+
         String pwd4 = EntityBase.generateNewID();
         User u6 = new User();
         u6.createNewID();
@@ -199,15 +199,10 @@ public class NewEmptyJUnitTest {
        u8.delete(true);
        assert(u8==null);
     }
-
     @Test
     public void TestGetAllUsers(){
         User[] user = EntityBase.getAllUsers();
         assert(user !=null);
-=======
-        
-       
->>>>>>> contributor/master
     }
 
     @Test
