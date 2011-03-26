@@ -154,8 +154,9 @@ public class NewEmptyJUnitTest {
        u7.setFirstName("testupdate456");
        u7.save();
        u7.delete(true);
-
-
+       User u8 = User.selectByUsername("firsttest@restwebservice") ;
+       u8.delete(true);
+       assert(u8==null);
     }
 
     @Test

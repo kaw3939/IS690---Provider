@@ -96,23 +96,20 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-
-    @Path("/delete")
-    @DELETE
-    public String  deleteUser(@QueryParam("email") String astrEmail) {
-        String strName = null;
+   @Path("/delete")
+   @DELETE
+    public void  deleteUser(@QueryParam("email") String astrEmail) {
       try {
            JSONObject content = new JSONObject(astrEmail);
            User u = User.selectByUsername(content.getString("Email")) ;
-      //   User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
-           strName = u.getFirstName();
-           u.save();
-           u.delete(true);
+           if(u==null) {
+                throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
+            }
+             u.delete(true);
         } catch (Exception ex){
-           return ex.toString();
+            ex.printStackTrace();
         }
-      return "deleted:"+ strName;
-    }
+     }
 
     /**
      * PUT method for  creating an instance of UserResource
