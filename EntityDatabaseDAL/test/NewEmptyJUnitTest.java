@@ -89,8 +89,9 @@ public class NewEmptyJUnitTest {
         Person p6=Person.selectByPersonEmail("person@testing.com");
         //Ensure that p6 has been deleted
         assert(p6==null);
+        //For now ensure that p7 is also deleted - authentication check required
         Person p7=Person.selectByPersonEmail("employee@company.com");
-        assert(p7!=null);
+        assert(p7==null);
 
 
        // Person person2=Person.selectByPersonEmail("Test4@Test.com");

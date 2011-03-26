@@ -112,26 +112,27 @@ public class Person extends EntityBase
     @Override
     public void delete(boolean load)
     {
-
-        try
-        {
-        User PersonIfUser= (User)(this);
-        }
-        catch (ClassCastException E)
-        {
-           //This Person is not a User. Delete can proceed
-           //Ensure that there is no Owner-User for this Person
-            if (this.getOwner() == null)
-            /* This is a stand alone Person Object, can be deleted with authentication
-             person/user initiating action has to be checked or not??*/
-            {
+        if (this instanceof User)
+            return;
+        //This Person is not a User. Delete can proceed
+         //Ensure that there is no Owner-User for this Person
+         User owner=this.getOwner();
+         if (owner == null|| owner.getEntityId().equals(this.getEntityId() ) )
+         /* This is a stand alone Person Object, or owns itself and
+             can be deleted */
+          {
                 super.delete(true);
-            }
-
-        }
+          }
+          else //is owned by a user - deletion should proceed only with authentication
+          {
+                //include code to authenticate the user doing the action - for now deletes anyway
+                super.delete(true);
+                return;
+          }
+ 
 
         
-        }
+    }
 }
       
 
