@@ -7,6 +7,7 @@ package EntityDB;
 import java.util.*;
 import javax.persistence.*;
 import java.io.Serializable;
+import org.hibernate.*;
 
 
 
@@ -65,8 +66,80 @@ public class Person extends EntityBase
     }
 
    
+    /***
+     * Selects a Person by email)
+     * @param name Person's email address
+     * @return The Person with the matching username or null if no user exists.
+     */
+    public static Person selectByPersonEmail(String Email)
+    {
+        try
+        {
+        SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
+        // new AnnotationConfiguration().configure().buildSessionFactory();
+        Session session =sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
 
+        List l = session.createQuery("from Person p where p.peopleEmail=:personEmail")
+                .setString("personEmail", Email).list();
+
+        Person[] person = new Person[l.size()];
+
+        for(int i = 0;i<l.size();i++)
+        {
+            person[i] = (Person)l.get(i);
+        }
+
+        tx.commit();
+
+        if(person.length==0)
+        {
+            return null;
+        }
+        return person[0];
+        }//try
+
+        catch( Exception E)
+        {
+            E.printStackTrace();
+            return null;
+        }
+
+        }
+   /***
+     * Deletes the Person if Person is not a user
+     */
+    @Override
+    public void delete(boolean load)
+    {
+        if (this instanceof User)
+            return;
+        //This Person is not a User. Delete can proceed
+         //Ensure that there is no Owner-User for this Person
+         User owner=this.getOwner();
+         if (owner == null|| owner.getEntityId().equals(this.getEntityId() ) )
+         /* This is a stand alone Person Object, or owns itself and
+             can be deleted */
+          {
+                super.delete(true);
+          }
+          else //is owned by a user - deletion should proceed only with authentication
+          {
+                //include code to authenticate the user doing the action - for now deletes anyway
+                super.delete(true);
+                return;
+          }
+ 
+
+        
+    }
+}
+      
+
+
+
+    
     
 
 
-}
+

@@ -185,6 +185,36 @@ public class EntityBase extends PersistableObject implements Serializable
 
     }
 
+     /***
+     * Selects a user by username (email)
+     * @param name User's email address
+     * @return The user with the matching username or null if no user exists.
+     */
+    public  static User[] getAllUsers()
+    {
+        SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
+        // new AnnotationConfiguration().configure().buildSessionFactory();
+        Session session =sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        List l = session.createQuery(" from User ").list();
+        User[] user = new User[l.size()];
+         for(int i = 0;i<l.size();i++)
+        {
+            user[i] = (User)l.get(i);
+        }
+        tx.commit();
+        if(user.length==0)
+        {
+            return null;
+        }
+        return user;
+
+
+    }
+
+
+
     /*
      * Creates a new ID for the entity. this should be called on a new entity
      * before saving it to the database.

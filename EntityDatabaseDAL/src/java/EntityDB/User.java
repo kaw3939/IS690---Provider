@@ -34,8 +34,9 @@ public class User extends Person
     private int saltMin = 3;
     private int saltMax = 15;
 
-    @OneToMany(mappedBy="owner")
-    private Set<EntityBase> children;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="owner")
+    private Set<EntityBase> children =  new HashSet<EntityBase>();
+;
 
 
     @SuppressWarnings("LeakingThisInConstructor")
@@ -129,7 +130,7 @@ public class User extends Person
      * @param name User's email address
      * @return The user with the matching username or null if no user exists.
      */
-    protected static User selectByUsername(String name)
+    public static User selectByUsername(String name)
     {
         SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
         // new AnnotationConfiguration().configure().buildSessionFactory();
