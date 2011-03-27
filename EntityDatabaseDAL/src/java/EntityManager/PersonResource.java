@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package EntityDB;
+package EntityManager;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.json.JSONObject;
+import EntityDB.*;
 
 
 /**
@@ -89,20 +90,31 @@ public class PersonResource {
    
 
     
-    @Path("person/delete")
+    @Path("person/delete/{id}")
     @DELETE
-    public String deletePerson(@QueryParam ("Email") String PersonEmail){
+    public String deletePerson(@PathParam ("id") String id){
     {
-      String EML=null;
+      
       try {
-          JSONObject content = new JSONObject(PersonEmail);
-          EML=content.toString();
-          System.out.println("Email is "+content.getString("Email")) ;
-          Person person = Person.selectByPersonEmail(content.getString("Email"));
-           person.delete(true);
-           return ("Person Delete Successful");
+
+          System.out.println("ID is "+id);
+          //Note: make sure this works.  Right now it is untested.
+          Person person = (Person)EntityBase.selectByID(id);//getEntityByID(id, "Person");
+          if(person instanceof User)
+          {
+               return "Error: Person is a system user.  Please delete through the User interface.";
+          }
+           //TODO: Create a parsible message for the application devs.
+          if(person == null)
+          {
+              return "Error: Person doesn't exist.";
+          }
+          person.delete(true);
+
+
+               return ("Person Delete Successful");
         } catch (Exception E){
-           return (EML);
+           return (E.getMessage());
         }
      }
     }
