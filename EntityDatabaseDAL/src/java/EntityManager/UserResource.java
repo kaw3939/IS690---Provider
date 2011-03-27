@@ -21,6 +21,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -98,13 +100,13 @@ public class UserResource {
      */
    @Path("/delete")
    @DELETE
-    public void  deleteUser(@QueryParam("email") String astrEmail) {
+    public void  deleteUser(@QueryParam("email") String astrEmail,  @Context SecurityContext context) {
       try {
            JSONObject content = new JSONObject(astrEmail);
            User u = User.selectByUsername(content.getString("Email")) ;
            if(u==null) {
                 throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
-            }
+            };
              u.delete(true);
         } catch (Exception ex){
             ex.printStackTrace();
@@ -125,13 +127,18 @@ public class UserResource {
           JSONObject content = new JSONObject(json);
           User u = new User();
           u.createNewID();
-          String strEmail = (String) content.get("Email");
-          u.setEmail(strEmail);
-          u.setFirstName((String) content.get("FirstName"));
-          u.setLastName((String) content.get("LastName"));
-          u.setPhone((String) content.get("Phone"));
-           String pwd2 = EntityBase.generateNewID();
-          u.setPassword(pwd2);
+          if (content.getString("FirstName") != null) {
+            u.setFirstName(content.getString("FirstName"));
+          }
+          if (content.getString("LastName") != null) {
+              u.setLastName(content.getString("LastName"));
+          }
+          if (content.getString("Phone") != null) {
+              u.setPhone(content.getString("Phone"));
+          }
+          if (content.getString("Password") != null) {
+             u.setPassword(content.getString("Password"));
+          }
           u.save();
           strName= (String) content.get("FirstName");
        } catch (Exception ex){
@@ -153,11 +160,18 @@ public class UserResource {
       try {
           JSONObject content = new JSONObject(json);
           User u = User.selectByUsername(content.getString("Email")) ;
-         // User u = User.getUserByPassword((String) content.getString("Email"), (String) content.getString("Password"));
-          u.setFirstName((String) content.get("FirstName"));
-          u.setLastName((String) content.get("LastName"));
-          u.setPhone((String) content.get("Phone"));
-          u.setPassword((String) content.get("Password"));
+          if (content.getString("FirstName") != null) {
+            u.setFirstName(content.getString("FirstName"));
+          }
+          if (content.getString("LastName") != null) {
+              u.setLastName(content.getString("LastName"));
+          }
+          if (content.getString("Phone") != null) {
+              u.setPhone(content.getString("Phone"));
+          }
+          if (content.getString("Password") != null) {
+             u.setPassword(content.getString("Password"));
+          }
           u.save();
           User uUpdated = User.selectByUsername(content.getString("Email")) ;
           strName= uUpdated.getFirstName();
