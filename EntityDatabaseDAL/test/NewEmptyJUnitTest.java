@@ -48,9 +48,12 @@ public class NewEmptyJUnitTest {
     @Test
     public void testPerson() throws java.security.NoSuchAlgorithmException, java.io.UnsupportedEncodingException
     {
+        String Id1=EntityBase.generateNewID();
+        String Id2=EntityBase.generateNewID();
+        String Id3=EntityBase.generateNewID();
         Person p = new Person();
         p.setEntityAccessStatus("1");
-        p.setEntityId(EntityBase.generateNewID());
+        p.setEntityId(Id1);
         p.setTypeId(0);
         p.setEmail("person@testing.com");
         p.setFirstName("Mark");
@@ -61,41 +64,49 @@ public class NewEmptyJUnitTest {
         //Test User Person ownership
         User personOwner=new User();
         personOwner.setFirstName("Charlie");
-        personOwner.setLastName("THeBoss@company.com");
+        personOwner.setLastName("Chocolate");
+        personOwner.setEmail(Id2);
         personOwner.setPhone("908-0090-1234");
-        personOwner.setEntityId(EntityBase.generateNewID());
+        personOwner.setEntityId(Id2);
         personOwner.setPassword(EntityBase.generateNewID());
         personOwner.save();
         
-        Person person=(Person) Person.selectByPersonEmail("TheBoss@company.com");
+       // Person person=(Person) Person.selectByPersonEmail("TheBoss@company.com");
+        Person person=(Person) Person.selectByID(Id1);
+        assert (person !=null);
+
         Person p1=new Person();
         p1.setEntityAccessStatus("1");
-        p1.setEntityId(EntityBase.generateNewID());
+        p1.setEntityId(Id3);
         p1.setTypeId(0);
         p1.setPhone("800-587-6309");
         p1.setFirstName("Tommy");
-        assert(person!=null);
-        //String lname=person.getLastName();
-        p1.setLastName("Johnson");
-        p1.setEmail("employee@company.com");
+        p1.setLastName("Park");
+        p1.setEmail("TP@company.com");
         p1.setOwner(personOwner);
         p1.save();
 
+        Person p4=(Person) Person.selectByID(Id3);
+        User u1=(User)User.selectByUsername(Id2);
 
-        //Do delettions
+        assert (p4 != null);
+        assert (u1!= null);
+
+        p4.delete(true);
+        Person p5=(Person) Person.selectByID(Id3);
+        assert (p5==null);
+        User u2=(User)User.selectByUsername(Id2);
+        assert(u2 != null);
+
+        u2.delete(true);
         p.delete(true);
-        p1.delete(true);
-
-        Person p6=Person.selectByPersonEmail("person@testing.com");
-        //Ensure that p6 has been deleted
-        assert(p6==null);
-        //For now ensure that p7 is also deleted - authentication check required
-        Person p7=Person.selectByPersonEmail("employee@company.com");
-        assert(p7==null);
+        Person p6=(Person) Person.selectByID(Id1);
+        User u6=(User) User.selectByUsername(Id2);
+        assert (p6 == null);
+        assert (u6 == null);;
 
 
-       // Person person2=Person.selectByPersonEmail("Test4@Test.com");
-       // person2.delete(true);
+       
 
     }
 
@@ -184,14 +195,14 @@ public class NewEmptyJUnitTest {
         String pwd4 = EntityBase.generateNewID();
         User u6 = new User();
         u6.createNewID();
-        u6.setEmail("abc1@somewhere.ru");
+        u6.setEmail("abc2@somewhere.ru");
         u6.setFirstName("funnybone");
         u6.setLastName("funnybone");
         u6.setPhone("800-251-1112");
         u6.setPassword(pwd4);
         u6.save();
 
-       User u7 = User.selectByUsername("abc1@somewhere.ru");
+       User u7 = User.selectByUsername("abc2@somewhere.ru");
        System.out.println(u7.getFirstName());
        u7.setFirstName("testupdate456");
        u7.save();
