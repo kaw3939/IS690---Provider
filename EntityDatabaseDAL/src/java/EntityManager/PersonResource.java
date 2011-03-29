@@ -48,7 +48,8 @@ public class PersonResource {
         {
             JSONObject content=new JSONObject(PersonEmail);
             Person person=Person.selectByPersonEmail(content.getString("Email"));
-            assert(person!=null);
+            if (person==null)
+                return "This Person does not exist in the system";
            json.put("Email", person.getEmail());
            json.put("Phone", person.getPhone());
            json.put("FirstName",person.getFirstName());
@@ -104,15 +105,30 @@ public class PersonResource {
           {
                return "Error: Person is a system user.  Please delete through the User interface.";
           }
+
            //TODO: Create a parsible message for the application devs.
           if(person == null)
           {
               return "Error: Person doesn't exist.";
           }
+          User owner=person.getOwner();
+          if (owner !=null)
+          {
+              if (owner.getEntityId()== id )//Owner is the same Entity
+              {
+                 person.delete(true);
+              }
+              else
+              {
+                  //Authenticate For Owner and then delete- include code for authentication
+                  person.delete(true);
+              }
+          }
+          else
+          {
           person.delete(true);
-
-
-               return ("Person Delete Successful");
+          }
+           return ("Person Delete Successful");
         } catch (Exception E){
            return (E.getMessage());
         }
@@ -124,7 +140,7 @@ public class PersonResource {
     
     
     /**
-     * PUT method for reating an instance of PersonResource
+     * PUT method for creating an instance of PersonResource
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */

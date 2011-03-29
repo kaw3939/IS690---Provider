@@ -67,7 +67,7 @@ public class NewEmptyJUnitTest {
         personOwner.setPassword(EntityBase.generateNewID());
         personOwner.save();
         
-        Person person=(Person) Person.selectByPersonEmail("Test2@test.com");
+        Person person=(Person) Person.selectByPersonEmail("TheBoss@company.com");
         Person p1=new Person();
         p1.setEntityAccessStatus("1");
         p1.setEntityId(EntityBase.generateNewID());
@@ -75,8 +75,8 @@ public class NewEmptyJUnitTest {
         p1.setPhone("800-587-6309");
         p1.setFirstName("Tommy");
         assert(person!=null);
-        String lname=person.getLastName();
-        p1.setLastName(lname);
+        //String lname=person.getLastName();
+        p1.setLastName("Johnson");
         p1.setEmail("employee@company.com");
         p1.setOwner(personOwner);
         p1.save();
@@ -196,9 +196,9 @@ public class NewEmptyJUnitTest {
        u7.setFirstName("testupdate456");
        u7.save();
        u7.delete(true);
-       User u8 = User.selectByUsername("firsttest@restwebservice") ;
+/*       User u8 = User.selectByUsername("firsttest@restwebservice") ;
        u8.delete(true);
-       assert(u8==null);
+       assert(u8==null);*/
     }
     @Test
     public void TestGetAllUsers(){
