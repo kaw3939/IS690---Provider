@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package EntityDB;
+package EntityManager;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.json.JSONObject;
+import EntityDB.*;
 
 
 /**
@@ -47,7 +48,8 @@ public class PersonResource {
         {
             JSONObject content=new JSONObject(PersonEmail);
             Person person=Person.selectByPersonEmail(content.getString("Email"));
-            assert(person!=null);
+            if (person==null)
+                return "This Person does not exist in the system";
            json.put("Email", person.getEmail());
            json.put("Phone", person.getPhone());
            json.put("FirstName",person.getFirstName());
@@ -89,20 +91,46 @@ public class PersonResource {
    
 
     
-    @Path("person/delete")
+    @Path("person/delete/{id}")
     @DELETE
-    public String deletePerson(@QueryParam ("Email") String PersonEmail){
+    public String deletePerson(@PathParam ("id") String id){
     {
-      String EML=null;
+      
       try {
-          JSONObject content = new JSONObject(PersonEmail);
-          EML=content.toString();
-          System.out.println("Email is "+content.getString("Email")) ;
-          Person person = Person.selectByPersonEmail(content.getString("Email"));
-           person.delete(true);
+
+          System.out.println("ID is "+id);
+          //Note: make sure this works.  Right now it is untested.
+          Person person = (Person)EntityBase.selectByID(id);//getEntityByID(id, "Person");
+          if(person instanceof User)
+          {
+               return "Error: Person is a system user.  Please delete through the User interface.";
+          }
+
+           //TODO: Create a parsible message for the application devs.
+          if(person == null)
+          {
+              return "Error: Person doesn't exist.";
+          }
+          User owner=person.getOwner();
+          if (owner !=null)
+          {
+              if (owner.getEntityId()== id )//Owner is the same Entity
+              {
+                 person.delete(true);
+              }
+              else
+              {
+                  //Authenticate For Owner and then delete- include code for authentication
+                  person.delete(true);
+              }
+          }
+          else
+          {
+          person.delete(true);
+          }
            return ("Person Delete Successful");
         } catch (Exception E){
-           return (EML);
+           return (E.getMessage());
         }
      }
     }
@@ -112,7 +140,7 @@ public class PersonResource {
     
     
     /**
-     * PUT method for reating an instance of PersonResource
+     * PUT method for creating an instance of PersonResource
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */

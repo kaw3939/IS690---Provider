@@ -158,7 +158,7 @@ public class EntityBase extends PersistableObject implements Serializable
      * @return
      * The entity with the given ID or null if none exists.
      */
-    protected static EntityBase selectByID(String id)
+    public static EntityBase selectByID(String id)
     {
         SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
         // new AnnotationConfiguration().configure().buildSessionFactory();
@@ -172,7 +172,7 @@ public class EntityBase extends PersistableObject implements Serializable
 
         for(int i = 0;i<l.size();i++)
         {
-            entity[i] = (User)l.get(i);
+            entity[i] = (EntityBase)l.get(i);
         }
 
         tx.commit();
@@ -184,6 +184,7 @@ public class EntityBase extends PersistableObject implements Serializable
 
 
     }
+    
 
      /***
      * Selects a user by username (email)

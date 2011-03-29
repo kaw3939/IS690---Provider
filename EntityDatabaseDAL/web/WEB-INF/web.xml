@@ -18,22 +18,25 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
     <security-constraint>
-       <web-resource-collection>
-         <web-resource-name>All Access</web-resource-name>
-         <url-pattern>/person/*</url-pattern>
-         <url-pattern>/user/*</url-pattern>
-         <url-pattern>/event/*</url-pattern>
-         <http-method>DELETE</http-method>
-         <http-method>PUT</http-method>
-         <http-method>HEAD</http-method>
-         <http-method>OPTIONS</http-method>
-         <http-method>TRACE</http-method>
-         <http-method>GET</http-method>
-         <http-method>POST</http-method>
-       </web-resource-collection>
-       <user-data-constraint>
-         <transport-guarantee>NONE</transport-guarantee>
-       </user-data-constraint>
+        <web-resource-collection>
+            <web-resource-name>All Access</web-resource-name>
+            <description/>
+            <url-pattern>/user/*</url-pattern>
+            <url-pattern>/person/*</url-pattern>
+            <url-pattern>/entity/user/*</url-pattern>
+            <url-pattern>/event/*</url-pattern>
+            <url-pattern>/entity/*</url-pattern>
+            <url-pattern>/entity/person/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>PUT</http-method>
+            <http-method>HEAD</http-method>
+            <http-method>POST</http-method>
+            <http-method>OPTIONS</http-method>
+            <http-method>TRACE</http-method>
+            <http-method>DELETE</http-method>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
     </security-constraint>
-
 </web-app>
