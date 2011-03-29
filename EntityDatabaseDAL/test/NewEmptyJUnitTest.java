@@ -103,7 +103,7 @@ public class NewEmptyJUnitTest {
         Person p6=(Person) Person.selectByID(Id1);
         User u6=(User) User.selectByUsername(Id2);
         assert (p6 == null);
-        assert (u6 == null);;
+        assert (u6 == null);
 
 
        
