@@ -47,8 +47,7 @@ public class UserResource {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
-           JSONObject content = new JSONObject(astrEmail);
-           User u = User.selectByUsername((String) content.getString("Email"));
+           User u = User.selectByUsername(astrEmail) ;
            json.put("FirstName", u.getFirstName());
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
