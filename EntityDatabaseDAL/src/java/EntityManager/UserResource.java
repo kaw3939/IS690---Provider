@@ -31,14 +31,11 @@ import javax.ws.rs.core.Context;
 public class UserResource {
     @Context
     private UriInfo context;
-     protected String email;
+
     /** Creates a new instance of UserResource */
     public UserResource() {
     }
 
-    public void setEmail(String strEmail) {
-        this.email = strEmail;
-    }
     /**
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
@@ -100,13 +97,13 @@ public class UserResource {
      */
    @Path("{email}")
    @DELETE
-    public void  deleteUser() {
+    public void  deleteUser(@PathParam("email") String astrEmail) {
       try {
-           User u = User.selectByUsername(email) ;
+           User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
-                throw new RuntimeException("Delete: User with " + email +  " not found");
+                throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
           }
-             u.delete(true);
+          u.delete(true);
         } catch (Exception ex){
             ex.printStackTrace();
         }
