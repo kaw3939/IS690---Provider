@@ -7,8 +7,6 @@ package EntityManager;
 
 import EntityDB.EntityBase;
 import EntityDB.User;
-import java.util.List;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
@@ -18,11 +16,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 
 
 /**
@@ -31,23 +27,26 @@ import javax.ws.rs.core.SecurityContext;
  * @author mpayyappilly
  */
 
-@Path("user")
+@Path("/user/")
 public class UserResource {
     @Context
     private UriInfo context;
-
+     protected String email;
     /** Creates a new instance of UserResource */
     public UserResource() {
     }
 
+    public void setEmail(String strEmail) {
+        this.email = strEmail;
+    }
     /**
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
      */
-    @Path("/retrieve")
+    @Path("{email}")
     @GET
     @Produces("application/json")
-    public String retrieveUser(@QueryParam("email") String astrEmail) {
+    public String retrieveUser(@PathParam("email") String astrEmail) {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
@@ -99,27 +98,27 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-   @Path("/delete")
+   @Path("{email}")
    @DELETE
-    public void  deleteUser(@QueryParam("email") String astrEmail,  @Context SecurityContext context) {
+    public void  deleteUser() {
       try {
-           JSONObject content = new JSONObject(astrEmail);
-           User u = User.selectByUsername(content.getString("Email")) ;
+           User u = User.selectByUsername(email) ;
            if(u==null) {
-                throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
-            };
+                throw new RuntimeException("Delete: User with " + email +  " not found");
+          }
              u.delete(true);
         } catch (Exception ex){
             ex.printStackTrace();
         }
      }
 
+   @Path("/")
     /**
      * PUT method for  creating an instance of UserResource
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("/create")
+    
     @PUT
     @Consumes("application/json")
     public String  addUser(String  json) {
@@ -140,6 +139,12 @@ public class UserResource {
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
+          if (content.getString("Email") != null) {
+             u.setEmail(content.getString("Email"));
+          }else {
+              return "Cannot save a user without Email!";
+          }
+
           u.save();
           strName= (String) content.get("FirstName");
        } catch (Exception ex){
@@ -153,7 +158,7 @@ public class UserResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("/update")
+    @Path("{email}")
     @POST
     @Consumes("application/json")
     public String  updateUser(String  json) {
