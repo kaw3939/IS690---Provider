@@ -17,7 +17,33 @@ import java.io.Serializable;
 )
 public class Event extends EntityBase
 {
- 
+
+    @ManyToMany
+    @JoinTable(name = "entityrelationship",
+        joinColumns = {
+            @JoinColumn(name="ChildEntityID")
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name="ParentEntityID")
+        }
+    )
+    private Set<Person> people =  new HashSet<Person>();
+
+    public Set<Person>getPeople()
+    {
+        return people;
+    }
+
+    public void addPerson(Person person)
+    {
+       people.add(person);
+    }
+
+    public void removePerson(Person person)
+    {
+       people.remove(person);
+    }
+
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "EventStartDate", nullable = false, length = 15)
     private Date eventStartDate;

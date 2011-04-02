@@ -36,7 +36,7 @@ public class User extends Person
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="owner")
     private Set<EntityBase> children =  new HashSet<EntityBase>();
-;
+
 
 
     @SuppressWarnings("LeakingThisInConstructor")
