@@ -30,6 +30,24 @@ public class Person extends EntityBase
     @Column(name="PeoplePhone", length=20)
     private String peoplePhone;
     //private String userID = "0";
+
+
+    @ManyToMany
+    @JoinTable(name = "entityrelationship",
+        joinColumns = {
+            @JoinColumn(name="ParentEntityID")
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name="ChildEntityID")
+        }
+    )
+    private Set<Event> events =  new HashSet<Event>();
+
+    public Set<Event> getEvents()
+    {
+        return events;
+    }
+
     public Person(){}
     
     public String getFirstName() {

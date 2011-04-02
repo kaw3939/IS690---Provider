@@ -21,6 +21,13 @@
     </many-to-one>
     <joined-subclass catalog="entitydb" name="EntityDB.Event" table="event">
       <key column="EntityID"/>
+
+       <set name="people" table="entityrelationship">
+          <key column="ParentEntityID"/>
+          <many-to-many column="ChildEntityID" class="EntityDB.Person"/>
+      </set>
+
+
       <property name="eventStartDate" type="timestamp">
         <column length="15" name="EventStartDate" not-null="true"/>
       </property>
@@ -42,6 +49,16 @@
     </joined-subclass>
     <joined-subclass catalog="entitydb" name="EntityDB.Person" table="people">
       <key column="EntityID"/>
+
+      <set inverse="true" name="events" table="entityrelationship">
+          <key column="ChildEntityID"/>
+          <many-to-many column="ParentEntityID" class="EntityDB.Event"/>
+      </set>
+
+
+
+
+
       <property name="peopleFirstName" type="string">
         <column length="50" name="PeopleFirstName"/>
       </property>
