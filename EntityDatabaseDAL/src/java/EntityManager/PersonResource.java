@@ -15,7 +15,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import org.json.JSONObject;
 import EntityDB.*;
 
@@ -39,14 +38,15 @@ public class PersonResource {
      * Retrieves representation of an instance of EntityDB.PersonResource
      * @return an instance of EntityDB.Person
      */
-    @Path("{email}")
-    @GET     @Produces("application/json")
-    public String retrievePerson(@PathParam ("email") String strPersonEmail) {
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String retrievePerson(@PathParam ("id") String id) {
         //TODO return proper representation object
         JSONObject json= new JSONObject();
         try
         {
-           Person person=Person.selectByPersonEmail(strPersonEmail);
+           Person person = (Person) EntityBase.selectByID(id);
            if (person==null)
                 return "This Person does not exist in the system";
            json.put("Email", person.getEmail());
@@ -55,15 +55,16 @@ public class PersonResource {
            json.put("LastName", person.getLastName());
            return json.toString();
         } catch (Exception ex){
-            return (ex.toString());
-           // return json;
+            return (ex.toString());           
         }                    
 }
 
     /** POST method to update fields. Email is not updateable**/
-    @Path("{email}")
-    @POST @Consumes("application/json")
-    public String updatePerson(String personInfo)
+    // Note this updated code needs to be tested - Mayank Desai
+    @POST
+    @Path("{id}")
+    @Consumes("application/json")
+    public String updatePerson(@PathParam ("id") String id, String personInfo)
     {
         try
         {
@@ -71,7 +72,7 @@ public class PersonResource {
             String firstName=content.getString("FirstName");
             String lastName=content.getString("LastName");
             String phone=content.getString("Phone");
-            Person person=Person.selectByPersonEmail(content.getString("Email"));
+            Person person = (Person) EntityBase.selectByID(id);
             if  (firstName.length() !=0)
                person.setFirstName(firstName);
             if  (lastName.length() !=0)
@@ -87,16 +88,14 @@ public class PersonResource {
              return (E.toString());
         }
     }
-   
-
-    
+       
     @Path("{id}")
     @DELETE
     public String deletePerson(@PathParam ("id") String id){
     {
       try {
 
-          System.out.println("ID is "+id);
+          //System.out.println("ID is "+id);
           //Note: make sure this works.  Right now it is untested.
           Person person = (Person)EntityBase.selectByID(id);//getEntityByID(id, "Person");
           if(person instanceof User)
@@ -132,10 +131,7 @@ public class PersonResource {
         }
      }
     }
-
-
-    
-    
+ 
     
     /**
      * PUT method for creating an instance of PersonResource
