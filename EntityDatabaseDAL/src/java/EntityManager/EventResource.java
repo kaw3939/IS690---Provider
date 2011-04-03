@@ -15,12 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 import java.text.*;
+import java.util.*;
 import EntityDB.*;
 /**
  * REST Web Service
@@ -96,6 +95,8 @@ public class EventResource {
         }
          return "successfully created event";
     }
+
+
     @Path("{id}")
     @POST
     @Consumes("application/json")
@@ -125,6 +126,7 @@ public class EventResource {
             return(e.toString());
         }
     }
+
     /**
 * Delete method for deleting an instance of User
 * @param content representation for the resource
@@ -144,32 +146,68 @@ public class EventResource {
         }
      }
 
-   @Path("/AddPerson/")
-   @POST @Consumes ("application/json")
-   public String addPersonToEvent(String content)
+   @Path("/{eventid}/person/")
+   @PUT @Consumes ("application/json")
+   public String addPeopleToEvent(@PathParam("eventid") String eventId,String content)
    {
        try
        {
            JSONObject json=new JSONObject(content);
-           if ((json.isNull("eventid")) || (json.isNull("personid")))
+           if (eventId == null)
                    return
-                   ("Please specify an event and a person to add to the event");
-           String eventId, personId;
-           eventId=json.getString("eventid");
-           personId=json.getString("personid");
-           
+                   ("Please specify an event and a person or list of persons to add to the event");
+           JSONArray jsonArray =new JSONArray();
+           jsonArray = json.getJSONArray("Person");
            Event e=(Event)EntityBase.selectByID(eventId);
-           Person p = (Person)EntityBase.selectByID(personId);
+           if ((e==null))
+               return("This event does not exist.");
+           for(int i = 0;i<jsonArray.length();i++){
+               JSONObject person = ( JSONObject) jsonArray.get(i);
+               String personId = person.getString("id");
+               Person p = (Person)EntityBase.selectByID(personId);
+               e.addPerson(p);
 
-           if ((e==null)|| (p==null))
-               return("One of the objects does not exist. Ensure event and person exist.");
-           e.addPerson(p);
+           }
            e.save();
-           return ("This person has been added to the Event");
+           return (jsonArray.length()+"person(s) added to the Event");
        }
        catch (Exception e)
        {
            return (e.toString());
        }
    }
+
+   @Path("/{eventid}/person/")
+   @GET
+   public String retrievePeopleForAnEvent(@PathParam("eventid") String eventId)
+   {
+       try
+       {
+          if (eventId == null)
+                   return
+                   ("Please specify an event to get a list of persons registered for");
+
+           Event e=(Event)EntityBase.selectByID(eventId);
+           if ((e==null))
+               return("Event does not exist.");
+          Set <Person> sPerson =  e.getPeople();
+          JSONObject json = new JSONObject();
+          JSONArray jsonArray =new JSONArray();
+          Iterator itr = sPerson.iterator();
+          while(itr.hasNext()){
+             Person p = (Person) itr.next() ;
+             json.put("Email", p.getEmail());
+             json.put("Phone", p.getPhone());
+             json.put("FirstName",p.getFirstName());
+             json.put("LastName", p.getLastName());
+             jsonArray.put(json);
+          }
+           return (jsonArray.toString());
+       }
+       catch (Exception e)
+       {
+           return (e.toString());
+       }
+   }
+
 }

@@ -26,7 +26,7 @@ import EntityDB.*;
  * @author ramyabalaji
  */
 
-@Path("entity")
+@Path("/person/")
 public class PersonResource {
     @Context
     private UriInfo context;
@@ -39,16 +39,15 @@ public class PersonResource {
      * Retrieves representation of an instance of EntityDB.PersonResource
      * @return an instance of EntityDB.Person
      */
-    @Path("person/retrieve")
+    @Path("{email}")
     @GET     @Produces("application/json")
-    public String retrievePerson(@QueryParam ("Email") String PersonEmail) {
+    public String retrievePerson(@PathParam ("email") String strPersonEmail) {
         //TODO return proper representation object
         JSONObject json= new JSONObject();
         try
         {
-            JSONObject content=new JSONObject(PersonEmail);
-            Person person=Person.selectByPersonEmail(content.getString("Email"));
-            if (person==null)
+           Person person=Person.selectByPersonEmail(strPersonEmail);
+           if (person==null)
                 return "This Person does not exist in the system";
            json.put("Email", person.getEmail());
            json.put("Phone", person.getPhone());
@@ -62,7 +61,7 @@ public class PersonResource {
 }
 
     /** POST method to update fields. Email is not updateable**/
-    @Path("person/update")
+    @Path("{email}")
     @POST @Consumes("application/json")
     public String updatePerson(String personInfo)
     {
@@ -91,11 +90,10 @@ public class PersonResource {
    
 
     
-    @Path("person/delete/{id}")
+    @Path("{id}")
     @DELETE
     public String deletePerson(@PathParam ("id") String id){
     {
-      
       try {
 
           System.out.println("ID is "+id);
@@ -144,7 +142,7 @@ public class PersonResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
-    @Path("person/create")
+    @Path("/")
     @PUT
     @Consumes("application/json")
     public String createPerson(String json) {
