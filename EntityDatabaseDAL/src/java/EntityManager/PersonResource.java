@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import EntityDB.*;
 
@@ -161,5 +162,30 @@ public class PersonResource {
     }
 
 
+    @Path("/list/all")
+    @GET
+    @Produces("application/json")
+    public String retrieveAllPeople() {
+        //TODO return proper representation object
+
+      JSONArray jsonArray =new JSONArray();
+      try {
+        Person[] people =EntityBase.getAllPeople();
+         for(int i = 0;i<people.length;i++)
+        {
+           Person p = people[i] ;
+           JSONObject json = new JSONObject();
+           json.put("FirstName", p.getFirstName());
+           json.put("LastName", p.getLastName());
+           json.put("Email", p.getEmail());
+           json.put("Phone", p.getPhone());
+           jsonArray.put(json);
+        }
+
+        } catch (Exception ex){
+            return ex.toString();
+        }
+        return jsonArray.toString();
     }
 
+}

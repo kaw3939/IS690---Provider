@@ -214,6 +214,54 @@ public class EntityBase extends PersistableObject implements Serializable
 
     }
 
+    public  static Person[] getAllPeople()
+    {
+        SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
+        // new AnnotationConfiguration().configure().buildSessionFactory();
+        Session session =sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        List l = session.createQuery(" from Person ").list();
+        Person[] p = new Person[l.size()];
+         for(int i = 0;i<l.size();i++)
+        {
+            p[i] = (Person)l.get(i);
+        }
+        tx.commit();
+        if(p.length==0)
+        {
+            return null;
+        }
+        return p;
+
+
+    }
+
+
+    public  static Event[] getAllEvents()
+    {
+        SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
+        // new AnnotationConfiguration().configure().buildSessionFactory();
+        Session session =sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        List l = session.createQuery(" from Event ").list();
+        Event[] e = new Event[l.size()];
+         for(int i = 0;i<l.size();i++)
+        {
+            e[i] = (Event)l.get(i);
+        }
+        tx.commit();
+        if(e.length==0)
+        {
+            return null;
+        }
+        return e;
+
+
+    }
+
+
 
 
     /*

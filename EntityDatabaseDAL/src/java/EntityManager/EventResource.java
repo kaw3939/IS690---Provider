@@ -210,4 +210,32 @@ public class EventResource {
        }
    }
 
+    @Path("/list/all")
+    @GET
+    @Produces("application/json")
+    public String retrieveAllEvents() {
+        //TODO return proper representation object
+
+      JSONArray jsonArray =new JSONArray();
+      try {
+        Event [] e =EntityBase.getAllEvents();
+         for(int i = 0;i<e.length;i++)
+        {
+           Event event = e[i] ;
+           JSONObject json = new JSONObject();
+           json.put("StartDate", event.getStartDate());
+           json.put("EndDate", event.getEndDate());
+           json.put("EntityID", event.getEntityId());
+           jsonArray.put(json);
+        }
+
+     //   json.put("Users:", user);
+        } catch (Exception ex){
+            return ex.toString();
+        }
+        return jsonArray.toString();
+    }
+
+
+
 }
