@@ -183,7 +183,7 @@ public class EventResource {
    @GET
    public String retrievePeopleForAnEvent(@PathParam("eventid") String eventId)
    {
-       try
+      try
        {
           if (eventId == null)
                    return
@@ -192,19 +192,13 @@ public class EventResource {
            Event e=(Event)EntityBase.selectByID(eventId);
            if ((e==null))
                return("Event does not exist.");
-          Set <Person> sPerson =  e.getPeople();        
-          JSONArray jsonArray =new JSONArray();
-          Iterator itr = sPerson.iterator();
-          while(itr.hasNext()){
-             JSONObject json = new JSONObject();
-             Person p = (Person) itr.next() ;
-             json.put("Email", p.getEmail());
-             json.put("Phone", p.getPhone());
-             json.put("FirstName",p.getFirstName());
-             json.put("LastName", p.getLastName());
-             jsonArray.put(json);
-          }
-           return (jsonArray.toString());
+          JSONArray uriArray = new JSONArray();
+        for (Person personEntity : e.getPeople()) {
+            UriBuilder ub = PersonResource.context.getAbsolutePathBuilder();
+            URI userUri = ub.path(personEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
        }
        catch (Exception e)
        {
@@ -252,7 +246,7 @@ public class EventResource {
     }
 
 
-  @Path("/{eventid}/person/list")
+  @Path("/{eventid}/person/list/all")
    @GET
    public String getPeopleListForAnEvent(@PathParam("eventid") String eventId)
    {
@@ -265,18 +259,24 @@ public class EventResource {
            Event e=(Event)EntityBase.selectByID(eventId);
            if ((e==null))
                return("Event does not exist.");
-          JSONArray uriArray = new JSONArray();
-        for (Person personEntity : e.getPeople()) {
-            UriBuilder ub = PersonResource.context.getAbsolutePathBuilder();
-            URI userUri = ub.path(personEntity.getEntityId()).build();
-            uriArray.put(userUri.toASCIIString());
-        }
-        return uriArray.toString();
+          Set <Person> sPerson =  e.getPeople();
+          JSONArray jsonArray =new JSONArray();
+          Iterator itr = sPerson.iterator();
+          while(itr.hasNext()){
+             JSONObject json = new JSONObject();
+             Person p = (Person) itr.next() ;
+             json.put("Email", p.getEmail());
+             json.put("Phone", p.getPhone());
+             json.put("FirstName",p.getFirstName());
+             json.put("LastName", p.getLastName());
+             jsonArray.put(json);
+          }
+           return (jsonArray.toString());
        }
        catch (Exception e)
        {
            return (e.toString());
-       }
+       }       
    }
 
 
