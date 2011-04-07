@@ -7,6 +7,7 @@ package EntityManager;
 
 import EntityDB.EntityBase;
 import EntityDB.User;
+import java.net.URI;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
@@ -19,6 +20,7 @@ import javax.ws.rs.Produces;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriBuilder;
 
 
 /**
@@ -96,16 +98,18 @@ public class UserResource {
      */
    @Path("{email}")
    @DELETE
-    public void  deleteUser(@PathParam("email") String astrEmail) {
+    public String  deleteUser(@PathParam("email") String astrEmail) {
       try {
            User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
-                throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
+               // throw new RuntimeException("Delete: User with " + astrEmail +  " not found");
+               return ("Delete: User with " + astrEmail +  " not found");
           }
           u.delete(true);
         } catch (Exception ex){
-            ex.printStackTrace();
+            return ex.getMessage();
         }
+      return "Successfully deleted User :" + astrEmail;
      }
 
    @Path("/")
@@ -157,11 +161,11 @@ public class UserResource {
     @Path("{email}")
     @POST
     @Consumes("application/json")
-    public String  updateUser(String  json) {
+    public String  updateUser(@PathParam("email") String astrEmail,String  json) {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
-          User u = User.selectByUsername(content.getString("Email")) ;
+          User u = User.selectByUsername(astrEmail) ;
           if (content.getString("FirstName") != null) {
             u.setFirstName(content.getString("FirstName"));
           }
@@ -182,4 +186,18 @@ public class UserResource {
        }
           return  "Successfully Updated User: " + strName;
     }
+
+    @Path("/")
+    @GET
+    @Produces("application/json")
+    public String getUsersAsJsonArray() {
+        JSONArray uriArray = new JSONArray();
+        for (User userEntity : EntityBase.getAllUsers()) {
+            UriBuilder ub = context.getAbsolutePathBuilder();
+            URI userUri = ub.path(userEntity.getEmail()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+    }
+
 }

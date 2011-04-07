@@ -18,6 +18,8 @@ import javax.ws.rs.Produces;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import EntityDB.*;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 
 
 /**
@@ -29,7 +31,7 @@ import EntityDB.*;
 @Path("/person/")
 public class PersonResource {
     @Context
-    private UriInfo context;
+    public static UriInfo context;
 
     /** Creates a new instance of PersonResource */
     public PersonResource() {
@@ -81,8 +83,7 @@ public class PersonResource {
             if  (phone.length() >9)
                person.setPhone(phone);
             person.save();
-            return ("Successfully Updated People- Non system User");
-
+            return ("Successfully Updated People- Non system User:"+ person.getEmail());
         }
         catch (Exception E)
         {
@@ -126,7 +127,7 @@ public class PersonResource {
           {
           person.delete(true);
           }
-           return ("Person Delete Successful");
+           return ("Successfully Deleted Person:"+ person.getEmail());
         } catch (Exception E){
            return (E.getMessage());
         }
@@ -186,6 +187,19 @@ public class PersonResource {
             return ex.toString();
         }
         return jsonArray.toString();
+    }
+
+    @Path("/")
+    @GET
+    @Produces("application/json")
+    public String getPeopleAsJsonArray() {
+        JSONArray uriArray = new JSONArray();
+        for (Person personEntity : EntityBase.getAllPeople()) {
+            UriBuilder ub = context.getAbsolutePathBuilder();
+            URI userUri = ub.path(personEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
     }
 
 }

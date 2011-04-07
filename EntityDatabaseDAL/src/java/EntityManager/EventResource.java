@@ -21,6 +21,8 @@ import javax.ws.rs.core.Context;
 import java.text.*;
 import java.util.*;
 import EntityDB.*;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 /**
  * REST Web Service
  *
@@ -82,7 +84,7 @@ public class EventResource {
            Event event=new Event();
            event.createNewID();
            //DateFormat df=DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-          SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+          SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
            if (!json.isNull("StartDate"))
                event.setStartDate(df.parse(json.getString("StartDate")));
            if (!json.isNull("EndDate"))
@@ -169,7 +171,7 @@ public class EventResource {
 
            }
            e.save();
-           return (jsonArray.length()+"person(s) added to the Event");
+           return (jsonArray.length()+ " person(s) added to the Event");
        }
        catch (Exception e)
        {
@@ -190,11 +192,11 @@ public class EventResource {
            Event e=(Event)EntityBase.selectByID(eventId);
            if ((e==null))
                return("Event does not exist.");
-          Set <Person> sPerson =  e.getPeople();
-          JSONObject json = new JSONObject();
+          Set <Person> sPerson =  e.getPeople();        
           JSONArray jsonArray =new JSONArray();
           Iterator itr = sPerson.iterator();
           while(itr.hasNext()){
+             JSONObject json = new JSONObject();
              Person p = (Person) itr.next() ;
              json.put("Email", p.getEmail());
              json.put("Phone", p.getPhone());
@@ -236,6 +238,46 @@ public class EventResource {
         return jsonArray.toString();
     }
 
+  @Path("/")
+    @GET
+    @Produces("application/json")
+    public String getEventsAsJsonArray() {
+        JSONArray uriArray = new JSONArray();
+        for (Event eventEntity : EntityBase.getAllEvents()) {
+            UriBuilder ub = context.getAbsolutePathBuilder();
+            URI userUri = ub.path(eventEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+    }
+
+
+  @Path("/{eventid}/person/list")
+   @GET
+   public String getPeopleListForAnEvent(@PathParam("eventid") String eventId)
+   {
+       try
+       {
+          if (eventId == null)
+                   return
+                   ("Please specify an event to get a list of persons registered for");
+
+           Event e=(Event)EntityBase.selectByID(eventId);
+           if ((e==null))
+               return("Event does not exist.");
+          JSONArray uriArray = new JSONArray();
+        for (Person personEntity : e.getPeople()) {
+            UriBuilder ub = PersonResource.context.getAbsolutePathBuilder();
+            URI userUri = ub.path(personEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+       }
+       catch (Exception e)
+       {
+           return (e.toString());
+       }
+   }
 
 
 }
