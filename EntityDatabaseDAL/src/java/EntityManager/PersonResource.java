@@ -56,6 +56,7 @@ public class PersonResource {
            json.put("Phone", person.getPhone());
            json.put("FirstName",person.getFirstName());
            json.put("LastName", person.getLastName());
+           json.put("EntityId",person.getEntityId());
            return json.toString();
         } catch (Exception ex){
             return (ex.toString());           
@@ -113,7 +114,7 @@ public class PersonResource {
           User owner=person.getOwner();
           if (owner !=null)
           {
-              if (owner.getEntityId()== id )//Owner is the same Entity
+              if (owner.getEntityId().equals(id ))//Owner is the same Entity
               {
                  person.delete(true);
               }
@@ -176,6 +177,7 @@ public class PersonResource {
         {
            Person p = people[i] ;
            JSONObject json = new JSONObject();
+           json.put("EntityId", p.getEntityId());
            json.put("FirstName", p.getFirstName());
            json.put("LastName", p.getLastName());
            json.put("Email", p.getEmail());
