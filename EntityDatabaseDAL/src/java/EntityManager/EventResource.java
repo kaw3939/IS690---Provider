@@ -15,13 +15,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.SecurityContext;
 import java.text.*;
+import java.util.*;
 import EntityDB.*;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 /**
  * REST Web Service
  *
@@ -83,7 +84,7 @@ public class EventResource {
            Event event=new Event();
            event.createNewID();
            //DateFormat df=DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-          SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+          SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
            if (!json.isNull("StartDate"))
                event.setStartDate(df.parse(json.getString("StartDate")));
            if (!json.isNull("EndDate"))
@@ -96,6 +97,8 @@ public class EventResource {
         }
          return "successfully created event";
     }
+
+
     @Path("{id}")
     @POST
     @Consumes("application/json")
@@ -125,6 +128,7 @@ public class EventResource {
             return(e.toString());
         }
     }
+
     /**
 * Delete method for deleting an instance of User
 * @param content representation for the resource
@@ -144,32 +148,136 @@ public class EventResource {
         }
      }
 
-   @Path("/AddPerson/")
-   @POST @Consumes ("application/json")
-   public String addPersonToEvent(String content)
+   @Path("/{eventid}/person/")
+   @PUT @Consumes ("application/json")
+   public String addPeopleToEvent(@PathParam("eventid") String eventId,String content)
    {
        try
        {
            JSONObject json=new JSONObject(content);
-           if ((json.isNull("eventid")) || (json.isNull("personid")))
+           if (eventId == null)
                    return
-                   ("Please specify an event and a person to add to the event");
-           String eventId, personId;
-           eventId=json.getString("eventid");
-           personId=json.getString("personid");
-           
+                   ("Please specify an event and a person or list of persons to add to the event");
+           JSONArray jsonArray =new JSONArray();
+           jsonArray = json.getJSONArray("Person");
            Event e=(Event)EntityBase.selectByID(eventId);
-           Person p = (Person)EntityBase.selectByID(personId);
+           if ((e==null))
+               return("This event does not exist.");
+           for(int i = 0;i<jsonArray.length();i++){
+               JSONObject person = ( JSONObject) jsonArray.get(i);
+               String personId = person.getString("id");
+               Person p = (Person)EntityBase.selectByID(personId);
+               e.addPerson(p);
 
-           if ((e==null)|| (p==null))
-               return("One of the objects does not exist. Ensure event and person exist.");
-           e.addPerson(p);
+           }
            e.save();
-           return ("This person has been added to the Event");
+           return (jsonArray.length()+ " person(s) added to the Event");
        }
        catch (Exception e)
        {
            return (e.toString());
        }
    }
+
+   @Path("/{eventid}/person/")
+   @GET
+   public String retrievePeopleForAnEvent(@PathParam("eventid") String eventId)
+   {
+      try
+       {
+          if (eventId == null)
+                   return
+                   ("Please specify an event to get a list of persons registered for");
+
+           Event e=(Event)EntityBase.selectByID(eventId);
+           if ((e==null))
+               return("Event does not exist.");
+          JSONArray uriArray = new JSONArray();
+        for (Person personEntity : e.getPeople()) {
+            UriBuilder ub = PersonResource.context.getAbsolutePathBuilder();
+            URI userUri = ub.path(personEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+       }
+       catch (Exception e)
+       {
+           return (e.toString());
+       }
+   }
+
+    @Path("/list/all")
+    @GET
+    @Produces("application/json")
+    public String retrieveAllEvents() {
+        //TODO return proper representation object
+
+      JSONArray jsonArray =new JSONArray();
+      try {
+        Event [] e =EntityBase.getAllEvents();
+         for(int i = 0;i<e.length;i++)
+        {
+           Event event = e[i] ;
+           JSONObject json = new JSONObject();
+           json.put("StartDate", event.getStartDate());
+           json.put("EndDate", event.getEndDate());
+           json.put("EntityID", event.getEntityId());
+           jsonArray.put(json);
+        }
+
+     //   json.put("Users:", user);
+        } catch (Exception ex){
+            return ex.toString();
+        }
+        return jsonArray.toString();
+    }
+
+  @Path("/")
+    @GET
+    @Produces("application/json")
+    public String getEventsAsJsonArray() {
+        JSONArray uriArray = new JSONArray();
+        for (Event eventEntity : EntityBase.getAllEvents()) {
+            UriBuilder ub = context.getAbsolutePathBuilder();
+            URI userUri = ub.path(eventEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+    }
+
+
+  @Path("/{eventid}/person/list/all")
+   @GET
+   public String getPeopleListForAnEvent(@PathParam("eventid") String eventId)
+   {
+       try
+       {
+          if (eventId == null)
+                   return
+                   ("Please specify an event to get a list of persons registered for");
+
+           Event e=(Event)EntityBase.selectByID(eventId);
+           if ((e==null))
+               return("Event does not exist.");
+          Set <Person> sPerson =  e.getPeople();
+          JSONArray jsonArray =new JSONArray();
+          Iterator itr = sPerson.iterator();
+          while(itr.hasNext()){
+             JSONObject json = new JSONObject();
+             Person p = (Person) itr.next() ;
+             json.put("Email", p.getEmail());
+             json.put("Phone", p.getPhone());
+             json.put("FirstName",p.getFirstName());
+             json.put("LastName", p.getLastName());
+             jsonArray.put(json);
+          }
+           return (jsonArray.toString());
+       }
+       catch (Exception e)
+       {
+           return (e.toString());
+       }       
+   }
+
+
 }
