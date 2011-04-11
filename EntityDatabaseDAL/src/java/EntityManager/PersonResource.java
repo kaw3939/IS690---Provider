@@ -15,9 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import EntityDB.*;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 
 
 /**
@@ -26,10 +28,10 @@ import EntityDB.*;
  * @author ramyabalaji
  */
 
-@Path("entity")
+@Path("/person/")
 public class PersonResource {
     @Context
-    private UriInfo context;
+    public static UriInfo context;
 
     /** Creates a new instance of PersonResource */
     public PersonResource() {
@@ -39,32 +41,34 @@ public class PersonResource {
      * Retrieves representation of an instance of EntityDB.PersonResource
      * @return an instance of EntityDB.Person
      */
-    @Path("person/retrieve")
-    @GET     @Produces("application/json")
-    public String retrievePerson(@QueryParam ("Email") String PersonEmail) {
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String retrievePerson(@PathParam ("id") String id) {
         //TODO return proper representation object
         JSONObject json= new JSONObject();
         try
         {
-            JSONObject content=new JSONObject(PersonEmail);
-            Person person=Person.selectByPersonEmail(content.getString("Email"));
-            if (person==null)
+           Person person = (Person) EntityBase.selectByID(id);
+           if (person==null)
                 return "This Person does not exist in the system";
            json.put("Email", person.getEmail());
            json.put("Phone", person.getPhone());
            json.put("FirstName",person.getFirstName());
            json.put("LastName", person.getLastName());
+           json.put("EntityId",person.getEntityId());
            return json.toString();
         } catch (Exception ex){
-            return (ex.toString());
-           // return json;
+            return (ex.toString());           
         }                    
 }
 
     /** POST method to update fields. Email is not updateable**/
-    @Path("person/update")
-    @POST @Consumes("application/json")
-    public String updatePerson(String personInfo)
+    // Note this updated code needs to be tested - Mayank Desai
+    @POST
+    @Path("{id}")
+    @Consumes("application/json")
+    public String updatePerson(@PathParam ("id") String id, String personInfo)
     {
         try
         {
@@ -72,7 +76,7 @@ public class PersonResource {
             String firstName=content.getString("FirstName");
             String lastName=content.getString("LastName");
             String phone=content.getString("Phone");
-            Person person=Person.selectByPersonEmail(content.getString("Email"));
+            Person person = (Person) EntityBase.selectByID(id);
             if  (firstName.length() !=0)
                person.setFirstName(firstName);
             if  (lastName.length() !=0)
@@ -80,25 +84,21 @@ public class PersonResource {
             if  (phone.length() >9)
                person.setPhone(phone);
             person.save();
-            return ("Successfully Updated People- Non system User");
-
+            return ("Successfully Updated People- Non system User:"+ person.getEmail());
         }
         catch (Exception E)
         {
              return (E.toString());
         }
     }
-   
-
-    
-    @Path("person/delete/{id}")
+       
+    @Path("{id}")
     @DELETE
     public String deletePerson(@PathParam ("id") String id){
     {
-      
       try {
 
-          System.out.println("ID is "+id);
+          //System.out.println("ID is "+id);
           //Note: make sure this works.  Right now it is untested.
           Person person = (Person)EntityBase.selectByID(id);//getEntityByID(id, "Person");
           if(person instanceof User)
@@ -114,7 +114,7 @@ public class PersonResource {
           User owner=person.getOwner();
           if (owner !=null)
           {
-              if (owner.getEntityId()== id )//Owner is the same Entity
+              if (owner.getEntityId().equals(id ))//Owner is the same Entity
               {
                  person.delete(true);
               }
@@ -128,23 +128,20 @@ public class PersonResource {
           {
           person.delete(true);
           }
-           return ("Person Delete Successful");
+           return ("Successfully Deleted Person:"+ person.getEmail());
         } catch (Exception E){
            return (E.getMessage());
         }
      }
     }
-
-
-    
-    
+ 
     
     /**
      * PUT method for creating an instance of PersonResource
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
-    @Path("person/create")
+    @Path("/")
     @PUT
     @Consumes("application/json")
     public String createPerson(String json) {
@@ -167,5 +164,44 @@ public class PersonResource {
     }
 
 
+    @Path("/list/all")
+    @GET
+    @Produces("application/json")
+    public String retrieveAllPeople() {
+        //TODO return proper representation object
+
+      JSONArray jsonArray =new JSONArray();
+      try {
+        Person[] people =EntityBase.getAllPeople();
+         for(int i = 0;i<people.length;i++)
+        {
+           Person p = people[i] ;
+           JSONObject json = new JSONObject();
+           json.put("EntityId", p.getEntityId());
+           json.put("FirstName", p.getFirstName());
+           json.put("LastName", p.getLastName());
+           json.put("Email", p.getEmail());
+           json.put("Phone", p.getPhone());
+           jsonArray.put(json);
+        }
+
+        } catch (Exception ex){
+            return ex.toString();
+        }
+        return jsonArray.toString();
     }
 
+    @Path("/")
+    @GET
+    @Produces("application/json")
+    public String getPeopleAsJsonArray() {
+        JSONArray uriArray = new JSONArray();
+        for (Person personEntity : EntityBase.getAllPeople()) {
+            UriBuilder ub = context.getAbsolutePathBuilder();
+            URI userUri = ub.path(personEntity.getEntityId()).build();
+            uriArray.put(userUri.toASCIIString());
+        }
+        return uriArray.toString();
+    }
+
+}
