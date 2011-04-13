@@ -89,6 +89,11 @@ public class EventResource {
                event.setStartDate(df.parse(json.getString("StartDate")));
            if (!json.isNull("EndDate"))
                event.setEndDate(df.parse(json.getString("EndDate")));
+           if (!json.isNull("Owner"))
+           {
+              String userid=json.getString("Owner");
+             event.setOwner((User)(EntityBase.selectByID(userid)));
+           }
            event.save();
         }
         catch (Exception e)
@@ -115,6 +120,19 @@ public class EventResource {
 
            
            SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+           User eventOwner=event.getOwner();
+           if (eventOwner!= null)
+           {
+              if (content.isNull("Owner"))
+                  return ("This event can only be updated by its owner. Please send owner information");
+              String userid=content.getString("Owner");
+               User owner=(User)EntityBase.selectByID(userid);
+               if (owner==null)
+                   return("This owner is invalid");
+               if (!(eventOwner.getEntityId().equals(owner.getEntityId())))
+                   return("Sorry. This user is not the Event owner");
+           }
+
             if (!content.isNull("StartDate"))
                 event.setStartDate(df.parse(content.getString("StartDate")));
                 
