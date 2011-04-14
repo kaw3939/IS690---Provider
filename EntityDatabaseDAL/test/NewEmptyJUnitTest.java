@@ -195,14 +195,14 @@ public class NewEmptyJUnitTest {
         String pwd4 = EntityBase.generateNewID();
         User u6 = new User();
         u6.createNewID();
-        u6.setEmail("abc2@somewhere.ru");
+        u6.setEmail("abc2test@somewhere.ru");
         u6.setFirstName("funnybone");
         u6.setLastName("funnybone");
         u6.setPhone("800-251-1112");
         u6.setPassword(pwd4);
         u6.save();
 
-       User u7 = User.selectByUsername("abc2@somewhere.ru");
+       User u7 = User.selectByUsername("abc2test@somewhere.ru");
        System.out.println(u7.getFirstName());
        u7.setFirstName("testupdate456");
        u7.save();
@@ -213,8 +213,11 @@ public class NewEmptyJUnitTest {
     }
     @Test
     public void TestGetAllUsers(){
-        User[] user = EntityBase.getAllUsers();
-        assert(user !=null);
+        PersistableObject[] user =  PersistableObject.getAllObjects("User");
+         for (int i =0;i<user.length;i++){
+            User u = (User) user[i];
+            assert(u !=null);
+        }
     }
 
     @Test

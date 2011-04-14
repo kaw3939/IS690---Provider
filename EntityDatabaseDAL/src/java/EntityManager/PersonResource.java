@@ -172,10 +172,10 @@ public class PersonResource {
 
       JSONArray jsonArray =new JSONArray();
       try {
-        Person[] people =EntityBase.getAllPeople();
+        PersistableObject[] people = PersistableObject.getAllObjects("Person");
          for(int i = 0;i<people.length;i++)
         {
-           Person p = people[i] ;
+           Person p = (Person) people[i] ;
            JSONObject json = new JSONObject();
            json.put("EntityId", p.getEntityId());
            json.put("FirstName", p.getFirstName());
@@ -196,9 +196,11 @@ public class PersonResource {
     @Produces("application/json")
     public String getPeopleAsJsonArray() {
         JSONArray uriArray = new JSONArray();
-        for (Person personEntity : EntityBase.getAllPeople()) {
+        PersistableObject [] po =  PersistableObject.getAllObjects("Person");
+        for (int i =0;i<po.length;i++){
+            Person p = (Person) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(personEntity.getEntityId()).build();
+            URI userUri = ub.path(p.getEntityId()).build();
             uriArray.put(userUri.toASCIIString());
         }
         return uriArray.toString();

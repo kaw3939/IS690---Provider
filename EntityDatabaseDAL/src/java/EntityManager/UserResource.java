@@ -6,6 +6,7 @@
 package EntityManager;
 
 import EntityDB.EntityBase;
+import EntityDB.PersistableObject;
 import EntityDB.User;
 import java.net.URI;
 import javax.ws.rs.core.UriInfo;
@@ -72,10 +73,10 @@ public class UserResource {
     
       JSONArray jsonArray =new JSONArray();
       try {
-        User[] user =EntityBase.getAllUsers();
+        PersistableObject[] user = PersistableObject.getAllObjects("User");
          for(int i = 0;i<user.length;i++)
         {
-           User u = user[i] ;
+           User u = (User) user[i] ;
            JSONObject json = new JSONObject();
            json.put("FirstName", u.getFirstName());
            json.put("LastName", u.getLastName());
@@ -192,11 +193,13 @@ public class UserResource {
     @Produces("application/json")
     public String getUsersAsJsonArray() {
         JSONArray uriArray = new JSONArray();
-        for (User userEntity : EntityBase.getAllUsers()) {
+        PersistableObject [] po =  PersistableObject.getAllObjects("User");
+        for (int i =0;i<po.length;i++){
+            User u = (User) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(userEntity.getEmail()).build();
+            URI userUri = ub.path(u.getEmail()).build();
             uriArray.put(userUri.toASCIIString());
-        }
+        }       
         return uriArray.toString();
     }
 
