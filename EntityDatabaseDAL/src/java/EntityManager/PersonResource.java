@@ -73,16 +73,16 @@ public class PersonResource {
         try
         {
             JSONObject content=new JSONObject(personInfo);
-            String firstName=content.getString("FirstName");
-            String lastName=content.getString("LastName");
-            String phone=content.getString("Phone");
+
             Person person = (Person) EntityBase.selectByID(id);
-            if  (firstName.length() !=0)
-               person.setFirstName(firstName);
-            if  (lastName.length() !=0)
-               person.setLastName(lastName);
-            if  (phone.length() >9)
-               person.setPhone(phone);
+            if (!content.isNull("FirstName"))
+               person.setFirstName(content.getString("FirstName"));
+            if (!content.isNull("LastName"))
+                person.setLastName(content.getString("LastName"));
+            if (!content.isNull("Email"))
+                person.setEmail(content.getString("Email"));
+            if (!content.isNull("Phone"))
+                person.setPhone(content.getString("Phone"));
             person.save();
             return ("Successfully Updated People- Non system User:"+ person.getEmail());
         }
@@ -91,7 +91,7 @@ public class PersonResource {
              return (E.toString());
         }
     }
-       
+   
     @Path("{id}")
     @DELETE
     public String deletePerson(@PathParam ("id") String id){
@@ -163,7 +163,40 @@ public class PersonResource {
        return  "Successfully Added Non System User(Person): " + personEmail;
     }
 
+    @Path ("/register/{id}")
+    @PUT
+    @Consumes("application/json")
+    public String registerPersonAsUser(@PathParam("id") String id, String personInfo)
+    {
+        try
+        {
+           JSONObject content=new JSONObject(personInfo);
+           Person p= (Person)EntityBase.selectByID(id);
+           if (p==null)
+               return("Cannot register this user. This Person does not exist!");
+           String UserName, password, OAuthToken;
+           if (content.isNull("UserName"))
+               return("UserName cannot be empty");
+           UserName=content.getString("UserName");
+           if (content.isNull("Password"))
+               return("Password cannot be empty");
+           password=content.getString("Password");
+           if (content.isNull("OAuthToken"))
+                   OAuthToken=null;
+           else
+               OAuthToken=content.getString("OAUthToken");
+           User registeredUser=User.createUserFromPerson(p, UserName, password, OAuthToken);
+           if (registeredUser==null)
+               return ("Unable to create user - Try a different user name!");
+           return ("Successfully created user"+registeredUser.getUserName(UserName));
 
+        }
+        catch(Exception ex)
+        {
+              return (ex.toString());
+        }
+        
+    }
     @Path("/list/all")
     @GET
     @Produces("application/json")

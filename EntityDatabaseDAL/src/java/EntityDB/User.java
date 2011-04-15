@@ -5,6 +5,7 @@ package EntityDB;
  * @author Rick Shaub
  */
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.security.*;
 import javax.persistence.*;
@@ -44,7 +45,7 @@ public class User extends Person
     {
         setOwner(this);
     }
-    @Override
+   /* @Override
     public String getEmail()
     {
         return this.userEmail;
@@ -56,7 +57,15 @@ public class User extends Person
         this.userEmail = userEmail;
         super.setEmail(userEmail);
 
-    }    
+    }   */
+    public void setUserName(String userName)
+    {
+        this.userEmail=userName;
+    }
+    public String getUserName(String userName)
+    {
+        return userEmail;
+    }
     
     protected String getOauthToken() {
         return this.userOauthToken;
@@ -196,7 +205,28 @@ public class User extends Person
     {
         return children;
     }
+/* Creates a user from person object when
+ a person registers to become a system users */
 
+    public static User createUserFromPerson(Person p, String UserName, String password, String oAuthToken)
+            throws java.security.NoSuchAlgorithmException, java.io.UnsupportedEncodingException
+    {
+        User testU=User.selectByUsername(UserName);
+        if (testU !=null)
+                  return null;
+       User u= new User();
+        u.createNewID();
+        u.setFirstName(p.getFirstName());
+        u.setLastName(p.getLastName());
+        u.setEmail(p.getEmail());
+        u.setUserName(UserName);
+        u.setPassword(password);
+        u.setOauthToken(oAuthToken);
+        u.save();
+        return u;
 
-
+   
+    }
 }
+
+
