@@ -139,16 +139,16 @@ public class UserResource {
           if (content.getString("Phone") != null) {
               u.setPhone(content.getString("Phone"));
           }
-          if (content.getString("UserName") != null) {
-              u.setPhone(content.getString("UserName"));
+          if (content.getString("Email") != null) {
+              u.setEmail(content.getString("Email"));
           }
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
-          if (content.getString("Email") != null) {
-             u.setEmail(content.getString("Email"));
+          if (content.getString("UserName") != null) {
+             u.setUserName(content.getString("UserName"));
           }else {
-              return "Cannot save a user without Email!";
+              return "Cannot save a user without UserName!";
           }
 
           u.save();
@@ -184,8 +184,11 @@ public class UserResource {
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
+          if (content.getString("Email")!=null){
+              u.setEmail(content.getString("Email"));
+          }
           u.save();
-          User uUpdated = User.selectByUsername(content.getString("Email")) ;
+          User uUpdated = User.selectByUsername(content.getString("UserName")) ;
           strName= uUpdated.getFirstName();
        } catch (Exception ex){
              return ex.toString();
