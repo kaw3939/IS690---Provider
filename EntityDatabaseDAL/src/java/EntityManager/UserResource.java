@@ -43,10 +43,10 @@ public class UserResource {
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
      */
-    @Path("{email}")
+    @Path("{UserName}")
     @GET
     @Produces("application/json")
-    public String retrieveUser(@PathParam("email") String astrEmail) {
+    public String retrieveUser(@PathParam("UserName") String astrEmail) {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
@@ -55,6 +55,7 @@ public class UserResource {
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
         } catch (Exception ex){
             return ex.toString();
         }
@@ -82,6 +83,7 @@ public class UserResource {
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
            jsonArray.put(json);
         }
 
@@ -97,9 +99,9 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-   @Path("{email}")
+   @Path("{UserName}")
    @DELETE
-    public String  deleteUser(@PathParam("email") String astrEmail) {
+    public String  deleteUser(@PathParam("UserName") String astrEmail) {
       try {
            User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
@@ -137,6 +139,9 @@ public class UserResource {
           if (content.getString("Phone") != null) {
               u.setPhone(content.getString("Phone"));
           }
+          if (content.getString("UserName") != null) {
+              u.setPhone(content.getString("UserName"));
+          }
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
@@ -159,10 +164,10 @@ public class UserResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("{email}")
+    @Path("{UserName}")
     @POST
     @Consumes("application/json")
-    public String  updateUser(@PathParam("email") String astrEmail,String  json) {
+    public String  updateUser(@PathParam("UserName") String astrEmail,String  json) {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
@@ -197,7 +202,7 @@ public class UserResource {
         for (int i =0;i<po.length;i++){
             User u = (User) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(u.getEmail()).build();
+            URI userUri = ub.path(u.getUserName()).build();
             uriArray.put(userUri.toASCIIString());
         }       
         return uriArray.toString();

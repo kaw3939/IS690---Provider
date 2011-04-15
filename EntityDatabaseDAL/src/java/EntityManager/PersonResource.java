@@ -188,7 +188,7 @@ public class PersonResource {
            User registeredUser=User.createUserFromPerson(p, UserName, password, OAuthToken);
            if (registeredUser==null)
                return ("Unable to create user - Try a different user name!");
-           return ("Successfully created user"+registeredUser.getUserName(UserName));
+           return ("Successfully created user "+registeredUser.getUserName());
 
         }
         catch(Exception ex)

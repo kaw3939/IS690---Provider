@@ -62,7 +62,7 @@ public class User extends Person
     {
         this.userEmail=userName;
     }
-    public String getUserName(String userName)
+    public String getUserName()
     {
         return userEmail;
     }
