@@ -207,16 +207,16 @@ public class EventResource {
                    return
                    ("Please specify an event to get a list of persons registered for");
 
-           Event e=(Event)EntityBase.selectByID(eventId);
-           if ((e==null))
+          Event e=(Event)EntityBase.selectByID(eventId);
+          if ((e==null))
                return("Event does not exist.");
           JSONArray uriArray = new JSONArray();
-        for (Person personEntity : e.getPeople()) {
+          for (Person personEntity : e.getPeople()) {
             UriBuilder ub = PersonResource.context.getAbsolutePathBuilder();
             URI userUri = ub.path(personEntity.getEntityId()).build();
             uriArray.put(userUri.toASCIIString());
-        }
-        return uriArray.toString();
+            }
+          return uriArray.toString();
        }
        catch (Exception e)
        {
@@ -232,10 +232,10 @@ public class EventResource {
 
       JSONArray jsonArray =new JSONArray();
       try {
-        Event [] e =EntityBase.getAllEvents();
+        PersistableObject [] e =  PersistableObject.getAllObjects("Event");
          for(int i = 0;i<e.length;i++)
         {
-           Event event = e[i] ;
+           Event event = (Event) e[i] ;
            JSONObject json = new JSONObject();
            json.put("StartDate", event.getStartDate());
            json.put("EndDate", event.getEndDate());
@@ -255,11 +255,13 @@ public class EventResource {
     @Produces("application/json")
     public String getEventsAsJsonArray() {
         JSONArray uriArray = new JSONArray();
-        for (Event eventEntity : EntityBase.getAllEvents()) {
+        PersistableObject [] po =  PersistableObject.getAllObjects("Event");
+        for (int i =0;i<po.length;i++){
+            Event e = (Event) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(eventEntity.getEntityId()).build();
+            URI userUri = ub.path(e.getEntityId()).build();
             uriArray.put(userUri.toASCIIString());
-        }
+        }       
         return uriArray.toString();
     }
 

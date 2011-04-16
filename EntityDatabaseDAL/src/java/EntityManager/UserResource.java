@@ -6,6 +6,7 @@
 package EntityManager;
 
 import EntityDB.EntityBase;
+import EntityDB.PersistableObject;
 import EntityDB.User;
 import java.net.URI;
 import javax.ws.rs.core.UriInfo;
@@ -42,10 +43,10 @@ public class UserResource {
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
      */
-    @Path("{email}")
+    @Path("{UserName}")
     @GET
     @Produces("application/json")
-    public String retrieveUser(@PathParam("email") String astrEmail) {
+    public String retrieveUser(@PathParam("UserName") String astrEmail) {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
@@ -54,6 +55,7 @@ public class UserResource {
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
         } catch (Exception ex){
             return ex.toString();
         }
@@ -72,15 +74,16 @@ public class UserResource {
     
       JSONArray jsonArray =new JSONArray();
       try {
-        User[] user =EntityBase.getAllUsers();
+        PersistableObject[] user = PersistableObject.getAllObjects("User");
          for(int i = 0;i<user.length;i++)
         {
-           User u = user[i] ;
+           User u = (User) user[i] ;
            JSONObject json = new JSONObject();
            json.put("FirstName", u.getFirstName());
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
            jsonArray.put(json);
         }
 
@@ -96,9 +99,9 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-   @Path("{email}")
+   @Path("{UserName}")
    @DELETE
-    public String  deleteUser(@PathParam("email") String astrEmail) {
+    public String  deleteUser(@PathParam("UserName") String astrEmail) {
       try {
            User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
@@ -136,13 +139,16 @@ public class UserResource {
           if (content.getString("Phone") != null) {
               u.setPhone(content.getString("Phone"));
           }
+          if (content.getString("Email") != null) {
+              u.setEmail(content.getString("Email"));
+          }
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
-          if (content.getString("Email") != null) {
-             u.setEmail(content.getString("Email"));
+          if (content.getString("UserName") != null) {
+             u.setUserName(content.getString("UserName"));
           }else {
-              return "Cannot save a user without Email!";
+              return "Cannot save a user without UserName!";
           }
 
           u.save();
@@ -158,10 +164,10 @@ public class UserResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("{email}")
+    @Path("{UserName}")
     @POST
     @Consumes("application/json")
-    public String  updateUser(@PathParam("email") String astrEmail,String  json) {
+    public String  updateUser(@PathParam("UserName") String astrEmail,String  json) {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
@@ -178,8 +184,11 @@ public class UserResource {
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
+          if (content.getString("Email")!=null){
+              u.setEmail(content.getString("Email"));
+          }
           u.save();
-          User uUpdated = User.selectByUsername(content.getString("Email")) ;
+          User uUpdated = User.selectByUsername(content.getString("UserName")) ;
           strName= uUpdated.getFirstName();
        } catch (Exception ex){
              return ex.toString();
@@ -192,11 +201,13 @@ public class UserResource {
     @Produces("application/json")
     public String getUsersAsJsonArray() {
         JSONArray uriArray = new JSONArray();
-        for (User userEntity : EntityBase.getAllUsers()) {
+        PersistableObject [] po =  PersistableObject.getAllObjects("User");
+        for (int i =0;i<po.length;i++){
+            User u = (User) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(userEntity.getEmail()).build();
+            URI userUri = ub.path(u.getUserName()).build();
             uriArray.put(userUri.toASCIIString());
-        }
+        }       
         return uriArray.toString();
     }
 

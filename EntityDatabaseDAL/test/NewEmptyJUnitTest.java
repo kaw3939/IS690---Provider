@@ -55,17 +55,18 @@ public class NewEmptyJUnitTest {
         p.setEntityAccessStatus("1");
         p.setEntityId(Id1);
         p.setTypeId(0);
-        p.setEmail("person@testing.com");
+        p.setEmail("person123@testing.com");
         p.setFirstName("Mark");
-        p.setLastName("HopeWorks");
+        p.setLastName("Peters");
         p.setPhone("800-587-6309");
         p.save();
 
         //Test User Person ownership
         User personOwner=new User();
-        personOwner.setFirstName("Charlie");
+        personOwner.setFirstName("Charlie the second");
         personOwner.setLastName("Chocolate");
         personOwner.setEmail(Id2);
+        personOwner.setUserName(Id2);
         personOwner.setPhone("908-0090-1234");
         personOwner.setEntityId(Id2);
         personOwner.setPassword(EntityBase.generateNewID());
@@ -131,9 +132,10 @@ public class NewEmptyJUnitTest {
         User u = new User();
         u.setEntityAccessStatus("1");
         u.setEntityId(EntityBase.generateNewID());
-        u.setTypeId(0);        
+        u.setTypeId(0);
         u.setEmail(email1);
-        u.setFirstName("Ricky");
+        u.setUserName(email1);
+        u.setFirstName("Jeremy");
         u.setLastName("Sprungfield");
         u.setPhone("800-587-6309");
         u.setPassword(pwd1);
@@ -144,6 +146,7 @@ public class NewEmptyJUnitTest {
         u0.setEntityId(EntityBase.generateNewID());
         u0.setTypeId(0);        
         u0.setEmail(email3);
+        u0.setUserName(email3);
         u0.setFirstName("Joe");
         u0.setLastName("Namath");
         u0.setPhone("800-667-1235");
@@ -156,6 +159,7 @@ public class NewEmptyJUnitTest {
         u1.setEntityId(EntityBase.generateNewID());
         u1.setTypeId(0);
         u1.setEmail(email2);
+        u1.setUserName(email2);
         u1.setFirstName("Johnny");
         u1.setLastName("Knoxville");
         u1.setPhone("800-251-1112");
@@ -195,14 +199,14 @@ public class NewEmptyJUnitTest {
         String pwd4 = EntityBase.generateNewID();
         User u6 = new User();
         u6.createNewID();
-        u6.setEmail("abc2@somewhere.ru");
+        u6.setEmail("abc2test@somewhere.ru");
         u6.setFirstName("funnybone");
         u6.setLastName("funnybone");
         u6.setPhone("800-251-1112");
         u6.setPassword(pwd4);
         u6.save();
 
-       User u7 = User.selectByUsername("abc2@somewhere.ru");
+       User u7 = User.selectByUsername("abc2test@somewhere.ru");
        System.out.println(u7.getFirstName());
        u7.setFirstName("testupdate456");
        u7.save();
@@ -213,8 +217,11 @@ public class NewEmptyJUnitTest {
     }
     @Test
     public void TestGetAllUsers(){
-        User[] user = EntityBase.getAllUsers();
-        assert(user !=null);
+        PersistableObject[] user =  PersistableObject.getAllObjects("User");
+         for (int i =0;i<user.length;i++){
+            User u = (User) user[i];
+            assert(u !=null);
+        }
     }
 
     @Test

@@ -4,8 +4,10 @@
  */
 
 package EntityDB;
+import java.util.*;
 import java.io.Serializable;
 import org.hibernate.*;
+
 /**
  * Base class for objects we want to persist to the database.
  * @author Rick Shaub
@@ -80,5 +82,34 @@ public abstract class PersistableObject implements Serializable
         session.flush();
         tx.commit();        
     }
+
+    /**
+     * Gets all instances of PersistableObject with the given type name
+     * @param type Name of the type of object.
+     * @return
+     */
+    public  static PersistableObject[] getAllObjects(String type)
+    {
+        SessionFactory sessionFactory =SessionFactoryUtil.getInstance();
+        // new AnnotationConfiguration().configure().buildSessionFactory();
+        Session session =sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+
+        List l = session.createQuery(" from "+ type + " ").list();
+        PersistableObject[] obj = new PersistableObject[l.size()];
+         for(int i = 0;i<l.size();i++)
+        {
+            obj[i] = (PersistableObject)l.get(i);
+        }
+        tx.commit();
+        if(obj.length==0)
+        {
+            return null;
+        }
+        return obj;
+
+
+    }
+
 
 }
