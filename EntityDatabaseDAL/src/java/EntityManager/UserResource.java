@@ -43,10 +43,10 @@ public class UserResource {
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
      */
-    @Path("{UserName}")
+    @Path("{username}")
     @GET
     @Produces("application/json")
-    public String retrieveUser(@PathParam("UserName") String astrEmail) {
+    public String retrieveUser(@PathParam("username") String astrEmail) {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
@@ -99,9 +99,9 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-   @Path("{UserName}")
+   @Path("{username}")
    @DELETE
-    public String  deleteUser(@PathParam("UserName") String astrEmail) {
+    public String  deleteUser(@PathParam("username") String astrEmail) {
       try {
            User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
@@ -164,10 +164,10 @@ public class UserResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("{UserName}")
+    @Path("{username}")
     @POST
     @Consumes("application/json")
-    public String  updateUser(@PathParam("UserName") String astrEmail,String  json) {
+    public String  updateUser(@PathParam("username") String astrEmail,String  json) {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
@@ -205,7 +205,10 @@ public class UserResource {
         for (int i =0;i<po.length;i++){
             User u = (User) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
+            System.out.println(u.getUserName());
             URI userUri = ub.path(u.getUserName()).build();
+
+            System.out.println(u.getUserName());
             uriArray.put(userUri.toASCIIString());
         }       
         return uriArray.toString();
