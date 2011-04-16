@@ -70,6 +70,7 @@ public class NewEmptyJUnitTest {
         personOwner.setPhone("908-0090-1234");
         personOwner.setEntityId(Id2);
         personOwner.setPassword(EntityBase.generateNewID());
+      //  personOwner.setUserName("cs2choc");
         personOwner.save();
         
        // Person person=(Person) Person.selectByPersonEmail("TheBoss@company.com");
@@ -204,9 +205,11 @@ public class NewEmptyJUnitTest {
         u6.setLastName("funnybone");
         u6.setPhone("800-251-1112");
         u6.setPassword(pwd4);
+        String id=EntityBase.generateNewID();
+        u6.setUserName(id);
         u6.save();
 
-       User u7 = User.selectByUsername("abc2test@somewhere.ru");
+       User u7 = User.selectByUsername(id);
        System.out.println(u7.getFirstName());
        u7.setFirstName("testupdate456");
        u7.save();
