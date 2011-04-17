@@ -43,10 +43,10 @@ public class UserResource {
      * Retrieves representation of an instance of EntityDB.UserResource
      * @return an instance of EntityDB.User
      */
-    @Path("{email}")
+    @Path("{username}")
     @GET
     @Produces("application/json")
-    public String retrieveUser(@PathParam("email") String astrEmail) {
+    public String retrieveUser(@PathParam("username") String astrEmail) {
         //TODO return proper representation object
           JSONObject json = new JSONObject();
       try {
@@ -55,6 +55,7 @@ public class UserResource {
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
         } catch (Exception ex){
             return ex.toString();
         }
@@ -82,6 +83,7 @@ public class UserResource {
            json.put("LastName", u.getLastName());
            json.put("Email", u.getEmail());
            json.put("Phone", u.getPhone());
+           json.put("UserName", u.getUserName());
            jsonArray.put(json);
         }
 
@@ -97,9 +99,9 @@ public class UserResource {
      * Delete method for deleting  an instance of User
      * @param content representation for the resource
      */
-   @Path("{email}")
+   @Path("{username}")
    @DELETE
-    public String  deleteUser(@PathParam("email") String astrEmail) {
+    public String  deleteUser(@PathParam("username") String astrEmail) {
       try {
            User u = User.selectByUsername(astrEmail) ;
            if(u==null) {
@@ -137,13 +139,16 @@ public class UserResource {
           if (content.getString("Phone") != null) {
               u.setPhone(content.getString("Phone"));
           }
+          if (content.getString("Email") != null) {
+              u.setEmail(content.getString("Email"));
+          }
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
-          if (content.getString("Email") != null) {
-             u.setEmail(content.getString("Email"));
+          if (content.getString("UserName") != null) {
+             u.setUserName(content.getString("UserName"));
           }else {
-              return "Cannot save a user without Email!";
+              return "Cannot save a user without UserName!";
           }
 
           u.save();
@@ -159,10 +164,10 @@ public class UserResource {
      * @param content representation for the resource
      * @return an HTTP response with content of the  created resource.
      */
-    @Path("{email}")
+    @Path("{username}")
     @POST
     @Consumes("application/json")
-    public String  updateUser(@PathParam("email") String astrEmail,String  json) {
+    public String  updateUser(@PathParam("username") String astrEmail,String  json) {
         String strName  =null;
       try {
           JSONObject content = new JSONObject(json);
@@ -179,8 +184,11 @@ public class UserResource {
           if (content.getString("Password") != null) {
              u.setPassword(content.getString("Password"));
           }
+          if (content.getString("Email")!=null){
+              u.setEmail(content.getString("Email"));
+          }
           u.save();
-          User uUpdated = User.selectByUsername(content.getString("Email")) ;
+          User uUpdated = User.selectByUsername(content.getString("UserName")) ;
           strName= uUpdated.getFirstName();
        } catch (Exception ex){
              return ex.toString();
@@ -197,7 +205,10 @@ public class UserResource {
         for (int i =0;i<po.length;i++){
             User u = (User) po[i];
             UriBuilder ub = context.getAbsolutePathBuilder();
-            URI userUri = ub.path(u.getEmail()).build();
+            System.out.println(u.getUserName());
+            URI userUri = ub.path(u.getUserName()).build();
+
+            System.out.println(u.getUserName());
             uriArray.put(userUri.toASCIIString());
         }       
         return uriArray.toString();
