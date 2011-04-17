@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="EntityDB.TextType" table="entitytexttype">
+    <id name="texttypeID" type="java.lang.Integer">
+      <column length="10" name="EntityTextTypeID"/>
+      <generator class="assigned"/>
+    </id>
+    <property name="texttypeDesc" type="string" column="EntityTextTypeDesc"/>
+  </class>
+</hibernate-mapping>

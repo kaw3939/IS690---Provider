@@ -9,5 +9,6 @@
     <property name="hibernate.connection.password">is690</property>
     <property name="current_session_context_class">thread</property>
     <mapping resource="EntityDB/EntityBase.hbm.xml"/>
+    <mapping resource="EntityDB/TextType.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
